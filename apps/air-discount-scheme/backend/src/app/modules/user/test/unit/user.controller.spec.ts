@@ -4,6 +4,7 @@ import { AirlineUser } from '../../user.model'
 import { PublicUserController } from '../../user.controller'
 import { UserService } from '../../user.service'
 import { DiscountService, Discount } from '../../../discount'
+import type { User as AuthUser } from '@island.is/auth-nest-tools'
 
 const airlineUser: AirlineUser = {
   nationalId: '1326487905',
@@ -16,6 +17,13 @@ const airlineUser: AirlineUser = {
     used: 0,
     total: 4,
   },
+}
+
+const auth: AuthUser = {
+  nationalId: '1326487905',
+  scope: ['@vegagerdin.is/air-discount-scheme-scope'],
+  authorization: '',
+  client: '',
 }
 
 describe('PublicUserController', () => {
