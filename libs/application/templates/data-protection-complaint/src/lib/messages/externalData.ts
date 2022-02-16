@@ -26,6 +26,11 @@ export const externalData = {
       90/2018, um persónuvernd og vinnslu persónuupplýsinga.`,
       description: 'externalData page description',
     },
+    bottomDescription: {
+      id: 'dpac.application:section.externalData.bottomDescription',
+      defaultMessage: `Nánari upplýsingar um vinnslu persónuupplýsinga í tengslum við kvartanir til Persónuverndar má nálgast í [persónuverndarstefnu](https://www.personuvernd.is/upplysingar-um-thig/) stofnunarinnar.`,
+      description: 'externalData page bottom description',
+    },
   }),
   labels: defineMessage({
     nationalRegistryTitle: {

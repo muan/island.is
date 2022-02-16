@@ -1,7 +1,7 @@
 import {
-  buildCheckboxField,
   buildCustomField,
   buildDataProviderItem,
+  buildDataProviderPermissionItem,
   buildExternalDataProvider,
   buildFileUploadField,
   buildForm,
@@ -28,7 +28,7 @@ import {
   sharedFields,
 } from '../lib/messages'
 import { externalData } from '../lib/messages/externalData'
-import { FILE_SIZE_LIMIT, NO, SubjectOfComplaint, YES } from '../shared'
+import { FILE_SIZE_LIMIT, NO, YES } from '../shared'
 
 const yesOption = { value: YES, label: sharedFields.yes }
 const noOption = { value: NO, label: sharedFields.no }
@@ -60,6 +60,13 @@ export const ComplaintForm: Form = buildForm({
               type: 'UserProfileProvider',
               title: externalData.labels.userProfileTitle,
               subTitle: externalData.labels.userProfileSubTitle,
+            }),
+          ],
+          otherPermissions: [
+            buildDataProviderPermissionItem({
+              id: 'bottomDescription',
+              title: '',
+              subTitle: externalData.general.bottomDescription,
             }),
           ],
         }),
