@@ -87,6 +87,52 @@ const RecyclingCompanyForm: FC<RecyclingCompanyForm> = ({
               />
             </GridColumn>
           </GridRow>
+
+          <GridRow>
+            <GridColumn
+              span={['12/12', '12/12', '12/12', '6/12']}
+              paddingBottom={[3, 3, 3, 0]}
+            >
+              <InputController
+                id="postnumber"
+                control={control}
+                required
+                label='Kennitala'
+                placeholder={
+                  'Kennitala'
+                }
+                rules={{
+                  required: {
+                    value: true,
+                    message:
+                      t.recyclingCompany.form.inputs.postnumber.rules?.required,
+                  },
+                }}
+                error={errors?.postnumber?.message}
+                backgroundColor="blue"
+              />
+            </GridColumn>
+            <GridColumn span={['12/12', '12/12', '12/12', '6/12']}>
+              <InputController
+                id="city"
+                control={control}
+                required
+                label='Netfang'
+                placeholder='Netfang'
+                rules={{
+                  required: {
+                    value: true,
+                    message:
+                      t.recyclingCompany.form.inputs.city.rules?.required,
+                  },
+                }}
+                error={errors?.city?.message}
+                backgroundColor="blue"
+              />
+            </GridColumn>
+          </GridRow>
+
+
           <GridRow>
             <GridColumn span="12/12">
               <InputController
