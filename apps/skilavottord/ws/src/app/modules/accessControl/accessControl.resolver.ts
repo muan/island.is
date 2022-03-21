@@ -61,6 +61,7 @@ export class AccessControlResolver {
     input: UpdateAccessControlInput,
     @CurrentUser() user: User,
   ): Promise<AccessControlModel> {
+    console.log('-->update accessControl')
     this.verifyDeveloperAccess(user, input.role)
     this.verifyRecyclingCompanyInput(input)
     return this.accessControlService.updateAccess(input)
