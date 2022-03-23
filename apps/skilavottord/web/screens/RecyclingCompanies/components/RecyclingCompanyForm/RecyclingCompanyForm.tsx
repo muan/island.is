@@ -93,7 +93,7 @@ const RecyclingCompanyForm: FC<RecyclingCompanyForm> = ({
               paddingBottom={[3, 3, 3, 0]}
             >
               <InputController
-                id="postnumber"
+                id="nationalId"
                 control={control}
                 required
                 label='Kennitala'
@@ -113,7 +113,7 @@ const RecyclingCompanyForm: FC<RecyclingCompanyForm> = ({
             </GridColumn>
             <GridColumn span={['12/12', '12/12', '12/12', '6/12']}>
               <InputController
-                id="city"
+                id="email"
                 control={control}
                 required
                 label='Netfang'
