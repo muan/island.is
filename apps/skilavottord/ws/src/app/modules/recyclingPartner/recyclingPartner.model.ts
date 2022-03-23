@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql'
+import { isNullableType } from 'graphql'
 import {
   Column,
   DataType,
@@ -48,6 +49,20 @@ export class RecyclingPartnerModel extends Model<RecyclingPartnerModel> {
     type: DataType.STRING,
   })
   city!: string
+
+  @Field({ nullable: true })
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  email!: string
+
+  @Field({ nullable: true })
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  national_id!: string
 
   @Field()
   @Column({
