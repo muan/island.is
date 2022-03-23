@@ -9,6 +9,8 @@ export const getRoleTranslation = (role: Role, locale: Locale): string => {
       return locale === 'is' ? 'Forritari' : 'Developer'
     case 'recyclingCompany':
       return locale === 'is' ? 'Móttökuaðili' : 'Recycling Company'
+    case 'recyclingCompanyAdmin':
+      return locale === 'is' ? 'Móttökuaðili Admin' : 'Recycling Company Admin'
     case 'recyclingFund':
       return locale === 'is' ? 'Úrvinnslusjóður' : 'Recycling Fund'
     default:
