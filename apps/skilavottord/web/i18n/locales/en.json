@@ -396,6 +396,20 @@
               "required": "Company name is required"
             }
           },
+          "nationalId": {
+            "label": "Nationald id",
+            "placeholder": "National id",
+            "rules": {
+              "required": "National id is required"
+            }
+          },
+          "email": {
+            "label": "Email",
+            "placeholder": "Email",
+            "rules": {
+              "required": "Email is required"
+            }
+          },
           "address": {
             "label": "Address",
             "placeholder": "Address",

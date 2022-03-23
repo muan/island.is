@@ -96,15 +96,15 @@ const RecyclingCompanyForm: FC<RecyclingCompanyForm> = ({
                 id="nationalId"
                 control={control}
                 required
-                label='Kennitala'
+                label={t.recyclingCompany.form.inputs.nationalId.label}
                 placeholder={
-                  'Kennitala'
+                  t.recyclingCompany.form.inputs.nationalId.placeholder
                 }
                 rules={{
                   required: {
                     value: true,
                     message:
-                      t.recyclingCompany.form.inputs.postnumber.rules?.required,
+                      t.recyclingCompany.form.inputs.nationalId.rules?.required,
                   },
                 }}
                 error={errors?.postnumber?.message}
@@ -116,13 +116,15 @@ const RecyclingCompanyForm: FC<RecyclingCompanyForm> = ({
                 id="email"
                 control={control}
                 required
-                label='Netfang'
-                placeholder='Netfang'
+                label={t.recyclingCompany.form.inputs.email.label}
+                placeholder={
+                  t.recyclingCompany.form.inputs.email.placeholder
+                }
                 rules={{
                   required: {
                     value: true,
                     message:
-                      t.recyclingCompany.form.inputs.city.rules?.required,
+                      t.recyclingCompany.form.inputs.email.rules?.required,
                   },
                 }}
                 error={errors?.city?.message}
