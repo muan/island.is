@@ -2,6 +2,7 @@ import React, { BaseSyntheticEvent, FC } from 'react'
 import { Control, Controller, FieldError } from 'react-hook-form'
 import { FieldValues } from 'react-hook-form/dist/types/form'
 import { DeepMap } from 'react-hook-form/dist/types/utils'
+import * as kennitala from 'kennitala'
 
 import {
   Box,
@@ -106,9 +107,21 @@ const RecyclingCompanyForm: FC<RecyclingCompanyForm> = ({
                     message:
                       t.recyclingCompany.form.inputs.nationalId.rules?.required,
                   },
+                  validate: {
+                    value: (value: number) => {
+                      if (
+                        value.toString().length === 10 &&
+                        !kennitala.isPerson(value)
+                      ) {
+                        return t.recyclingCompany.form.inputs.nationalId.rules?.validate
+                      }
+                    },
+                  },
                 }}
-                error={errors?.postnumber?.message}
-                backgroundColor="blue"
+            type="tel"
+            format="######-####"
+            error={errors?.nationalId?.message}
+            backgroundColor="blue"
               />
             </GridColumn>
             <GridColumn span={['12/12', '12/12', '12/12', '6/12']}>
@@ -117,9 +130,7 @@ const RecyclingCompanyForm: FC<RecyclingCompanyForm> = ({
                 control={control}
                 required
                 label={t.recyclingCompany.form.inputs.email.label}
-                placeholder={
-                  t.recyclingCompany.form.inputs.email.placeholder
-                }
+                placeholder={t.recyclingCompany.form.inputs.email.placeholder}
                 rules={{
                   required: {
                     value: true,
@@ -127,7 +138,7 @@ const RecyclingCompanyForm: FC<RecyclingCompanyForm> = ({
                       t.recyclingCompany.form.inputs.email.rules?.required,
                   },
                 }}
-                error={errors?.city?.message}
+                error={errors?.email?.message}
                 backgroundColor="blue"
               />
             </GridColumn>
