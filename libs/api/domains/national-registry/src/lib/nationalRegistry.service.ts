@@ -6,13 +6,22 @@ import { FamilyMember, FamilyChild, User, Gender, MaritalStatus } from './types'
 import { NationalRegistryApi } from '@island.is/clients/national-registry-v1'
 import { FamilyCorrectionInput } from './dto/FamilyCorrectionInput.input'
 import { FamilyCorrectionResponse } from './graphql/models/familyCorrection.model'
+import { MidlunApi } from '@island.is/clients/national-registry/v3'
 
 @Injectable()
 export class NationalRegistryService {
-  constructor(private nationalRegistryApi: NationalRegistryApi) {}
+  constructor(
+    private nationalRegistryApi: NationalRegistryApi,
+    private midlunApi: MidlunApi,
+  ) {}
 
   async getUser(nationalId: User['nationalId']): Promise<User> {
     const user = await this.nationalRegistryApi.getUser(nationalId)
+
+    const midlunResponse = await this.midlunApi.midlunClientNationalIdGet({
+      nationalId,
+    })
+    console.log('midlunApi', midlunResponse.nafn)
     return {
       nationalId: user.Kennitala,
       name: user.Birtnafn,

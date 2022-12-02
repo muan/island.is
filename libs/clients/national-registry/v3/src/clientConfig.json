@@ -1,0 +1,217 @@
+{
+  "openapi": "3.0.1",
+  "info": { "title": "MidlunRestAPI", "version": "1.0" },
+  "servers": [{ "url": "https://midlun-dev.skra.is" }],
+  "paths": {
+    "/Midlun/client/{nationalId}": {
+      "get": {
+        "tags": ["Midlun"],
+        "parameters": [
+          {
+            "name": "nationalId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EinstaklingurDTOAllt"
+                }
+              }
+            }
+          },
+          "204": { "description": "Success" },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetails" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Midlun/client/margir": {
+      "post": {
+        "tags": ["Midlun"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EinstaklingurDTOAlltList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetails" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EinstaklingurDTOAllt": {
+        "type": "object",
+        "properties": {
+          "kennitala": { "type": "string", "nullable": true },
+          "nafn": { "type": "string", "nullable": true },
+          "tegundKennitolu": { "type": "string", "nullable": true },
+          "bannmerking": { "type": "string", "nullable": true },
+          "afdrif": { "type": "string", "nullable": true },
+          "heimilisfang": {
+            "$ref": "#/components/schemas/EinstaklingurDTOHeimili"
+          },
+          "pakkiB": { "$ref": "#/components/schemas/EinstaklingurDTOPakkiB" },
+          "pakkiC": { "$ref": "#/components/schemas/EinstaklingurDTOPakkiC" },
+          "pakkiD": { "$ref": "#/components/schemas/EinstaklingurDTOPakkiD" },
+          "pakkiE": { "$ref": "#/components/schemas/EinstaklingurDTOPakkiE" },
+          "pakkiF": { "$ref": "#/components/schemas/EinstaklingurDTOPakkiF" }
+        },
+        "additionalProperties": false
+      },
+      "EinstaklingurDTOAlltList": {
+        "type": "object",
+        "properties": {
+          "einstaklingar": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/EinstaklingurDTOAllt" },
+            "nullable": true
+          },
+          "count": { "type": "integer", "format": "int32" },
+          "notFoundOrHidden": { "type": "integer", "format": "int32" }
+        },
+        "additionalProperties": false
+      },
+      "EinstaklingurDTOForsjaItem": {
+        "type": "object",
+        "properties": {
+          "barnKennitala": { "type": "string", "nullable": true },
+          "barnNafn": { "type": "string", "nullable": true },
+          "forsjaAdiliKennitala": { "type": "string", "nullable": true },
+          "forsjaAdiliNafn": { "type": "string", "nullable": true },
+          "forsjaKodi": { "type": "string", "nullable": true },
+          "forsjaTexti": { "type": "string", "nullable": true },
+          "forsjaAdiliFaedingardagur": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EinstaklingurDTOHeimili": {
+        "type": "object",
+        "properties": {
+          "husHeiti": { "type": "string", "nullable": true },
+          "ibud": { "type": "string", "nullable": true },
+          "postnumer": { "type": "string", "nullable": true },
+          "poststod": { "type": "string", "nullable": true },
+          "sveitarfelag": { "type": "string", "nullable": true },
+          "tegundHeimilisfangs": { "type": "string", "nullable": true }
+        },
+        "additionalProperties": false
+      },
+      "EinstaklingurDTOPakkiB": {
+        "type": "object",
+        "properties": {
+          "logheimiliskodi": { "type": "string", "nullable": true },
+          "logheimilistengsl": { "type": "string", "nullable": true },
+          "logheimiliskodi112": { "type": "string", "nullable": true },
+          "logheimiliskodiSIsl": { "type": "string", "nullable": true },
+          "adsetur": { "$ref": "#/components/schemas/EinstaklingurDTOHeimili" }
+        },
+        "additionalProperties": false
+      },
+      "EinstaklingurDTOPakkiC": {
+        "type": "object",
+        "properties": {
+          "hjuskaparstadaKodi": { "type": "string", "nullable": true },
+          "hjuskaparstadaTexti": { "type": "string", "nullable": true },
+          "sambudKodi": { "type": "string", "nullable": true },
+          "sambudTexti": { "type": "string", "nullable": true },
+          "makiKennitala": { "type": "string", "nullable": true },
+          "makiNafn": { "type": "string", "nullable": true }
+        },
+        "additionalProperties": false
+      },
+      "EinstaklingurDTOPakkiD": {
+        "type": "object",
+        "properties": {
+          "kynKodi": { "type": "string", "nullable": true },
+          "kynTexti": { "type": "string", "nullable": true }
+        },
+        "additionalProperties": false
+      },
+      "EinstaklingurDTOPakkiE": {
+        "type": "object",
+        "properties": {
+          "rikisfangKodi": { "type": "string", "nullable": true },
+          "rikisfangLand": { "type": "string", "nullable": true }
+        },
+        "additionalProperties": false
+      },
+      "EinstaklingurDTOPakkiF": {
+        "type": "object",
+        "properties": {
+          "born": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EinstaklingurDTOForsjaItem"
+            },
+            "nullable": true
+          },
+          "forsjaradilar": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EinstaklingurDTOForsjaItem"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "nullable": true },
+          "title": { "type": "string", "nullable": true },
+          "status": { "type": "integer", "format": "int32", "nullable": true },
+          "detail": { "type": "string", "nullable": true },
+          "instance": { "type": "string", "nullable": true }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "For token call: \\\r\nPOST https://{tenant}.b2clogin.com/{tenant}.onmicrosoft.com/{sign_in_flow}/oauth2/v2.0/token \\\r\nWith header: \\\r\nContent-Type: application/x-www-form-urlencoded \\\r\nWith body: \\\r\nScope=https://{tenant}.onmicrosoft.com/midlun/.default \\\r\nClient_Id={CLIENT_ID} \\\r\nClient_Secret={CLIENT_SECRET} \\\r\nGrant_type=client_credentials \\\r\n \\\r\nThen input \"Bearer {token}\" below \\\r\n \\\r\nContact Þjóðskrá for values",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [{ "Bearer": [] }]
+}
