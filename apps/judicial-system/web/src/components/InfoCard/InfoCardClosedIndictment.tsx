@@ -17,6 +17,16 @@ import { FormContext } from '../FormProvider/FormProvider'
 const InfoCardClosedIndictment: React.FC = () => {
   const { workingCase } = useContext(FormContext)
   const { formatMessage } = useIntl()
+  const defenders = workingCase.defendants?.map((defendant) => {
+    return {
+      name: defendant.defenderName || '',
+      defenderNationalId: defendant.defenderNationalId,
+      sessionArrangement: undefined,
+      email: defendant.defenderEmail,
+      phoneNumber: defendant.defenderPhoneNumber,
+    }
+  })
+
   return (
     <InfoCard
       data={[
@@ -54,7 +64,7 @@ const InfoCardClosedIndictment: React.FC = () => {
                 workingCase.policeCaseNumbers,
                 workingCase.indictmentSubtypes,
               ).map((subtype) => (
-                <Text>{capitalize(subtype)}</Text>
+                <Text key={subtype}>{capitalize(subtype)}</Text>
               ))}
             </>
           ) : (
@@ -76,6 +86,7 @@ const InfoCardClosedIndictment: React.FC = () => {
             }
           : undefined
       }
+      defenders={defenders}
     />
   )
 }

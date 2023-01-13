@@ -14,24 +14,18 @@ import {
   buildTextField,
   getValueViaPath,
 } from '@island.is/application/core'
-import { Form, FormModes } from '@island.is/application/types'
+import { Form, FormModes, UserProfileApi } from '@island.is/application/types'
 import { isRunningOnEnvironment } from '@island.is/shared/utils'
 
 import { parentalLeaveFormMessages } from '../lib/messages'
 import Logo from '../assets/Logo'
+import { ChildrenApi, GetPersonInformation } from '../dataProviders'
 import {
   isEligibleForParentalLeave,
   getSelectedChild,
   getApplicationAnswers,
 } from '../lib/parentalLeaveUtils'
-import {
-  NO,
-  YES,
-  ParentalRelations,
-  PARENTAL_LEAVE,
-  PARENTAL_GRANT,
-  PARENTAL_GRANT_STUDENTS,
-} from '../constants'
+import { NO, YES, ParentalRelations } from '../constants'
 import { defaultMultipleBirthsMonths } from '../config'
 
 const shouldRenderMockDataSubSection = !isRunningOnEnvironment('production')
@@ -290,8 +284,7 @@ export const PrerequisitesForm: Form = buildForm({
               checkboxLabel: parentalLeaveFormMessages.shared.checkboxProvider,
               dataProviders: [
                 buildDataProviderItem({
-                  id: 'userProfile',
-                  type: 'UserProfileProvider',
+                  provider: UserProfileApi,
                   title:
                     parentalLeaveFormMessages.shared
                       .userProfileInformationTitle,
@@ -300,16 +293,14 @@ export const PrerequisitesForm: Form = buildForm({
                       .userProfileInformationSubTitle,
                 }),
                 buildDataProviderItem({
-                  id: 'person',
-                  type: 'PersonInformationProvider',
+                  provider: GetPersonInformation,
                   title:
                     parentalLeaveFormMessages.shared.familyInformationTitle,
                   subTitle:
                     parentalLeaveFormMessages.shared.familyInformationSubTitle,
                 }),
                 buildDataProviderItem({
-                  id: 'children',
-                  type: 'Children',
+                  provider: ChildrenApi,
                   title:
                     parentalLeaveFormMessages.shared.childrenInformationTitle,
                   subTitle:

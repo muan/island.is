@@ -22,6 +22,7 @@ import {
   isAcceptingCaseDecision,
   UpdateCase,
   User,
+  isCourtRole,
 } from '@island.is/judicial-system/types'
 import {
   FormFooter,
@@ -273,8 +274,7 @@ export const SignedVerdictOverview: React.FC = () => {
         user.role,
       ) ||
         user.institution?.type === InstitutionType.PRISON_ADMIN) &&
-      (workingCase.type === CaseType.CUSTODY ||
-        workingCase.type === CaseType.ADMISSION_TO_FACILITY)
+      isRestrictionCase(workingCase.type)
     )
   }, [workingCase.type, user])
 
@@ -553,7 +553,7 @@ export const SignedVerdictOverview: React.FC = () => {
           <Box marginBottom={5}>
             <AlertMessage
               type="info"
-              title={formatMessage(m.sections.modifyDatesInfo.titleV2, {
+              title={formatMessage(m.sections.modifyDatesInfo.titleV3, {
                 caseType: workingCase.type,
               })}
               message={
@@ -638,13 +638,15 @@ export const SignedVerdictOverview: React.FC = () => {
                   }
                 : undefined
             }
-            defender={{
-              name: workingCase.defenderName ?? '',
-              defenderNationalId: workingCase.defenderNationalId,
-              sessionArrangement: workingCase.sessionArrangements,
-              email: workingCase.defenderEmail,
-              phoneNumber: workingCase.defenderPhoneNumber,
-            }}
+            defenders={[
+              {
+                name: workingCase.defenderName ?? '',
+                defenderNationalId: workingCase.defenderNationalId,
+                sessionArrangement: workingCase.sessionArrangements,
+                email: workingCase.defenderEmail,
+                phoneNumber: workingCase.defenderPhoneNumber,
+              },
+            ]}
           />
         </Box>
         {(workingCase.accusedAppealDecision === CaseAppealDecision.POSTPONE ||
@@ -652,8 +654,8 @@ export const SignedVerdictOverview: React.FC = () => {
           workingCase.prosecutorAppealDecision ===
             CaseAppealDecision.POSTPONE ||
           workingCase.prosecutorAppealDecision === CaseAppealDecision.APPEAL) &&
-          (user?.role === UserRole.JUDGE ||
-            user?.role === UserRole.REGISTRAR) &&
+          user?.role &&
+          isCourtRole(user.role) &&
           user?.institution?.type !== InstitutionType.HIGH_COURT && (
             <Box marginBottom={7}>
               <AppealSection
@@ -743,8 +745,7 @@ export const SignedVerdictOverview: React.FC = () => {
                       signatory={workingCase.courtRecordSignatory.name}
                       signingDate={workingCase.courtRecordSignatureDate}
                     />
-                  ) : user?.role === UserRole.JUDGE ||
-                    user?.role === UserRole.REGISTRAR ? (
+                  ) : user?.role && isCourtRole(user.role) ? (
                     <Button
                       variant="ghost"
                       size="small"

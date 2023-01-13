@@ -1,5 +1,4 @@
 import addDays from 'date-fns/addDays'
-import addMonths from 'date-fns/addMonths'
 
 import {
   buildCustomField,
@@ -21,17 +20,12 @@ import { parentalLeaveFormMessages } from '../lib/messages'
 import {
   getApplicationAnswers,
   getAllPeriodDates,
-  getExpectedDateOfBirth,
-  getLastValidPeriodEndDate,
   getPeriodImageTitle,
   getPeriodSectionTitle,
   getLeavePlanTitle,
   getMinimumStartDate,
 } from '../lib/parentalLeaveUtils'
-import {
-  minimumPeriodStartBeforeExpectedDateOfBirth,
-  minPeriodDays,
-} from '../config'
+import { minPeriodDays } from '../config'
 
 export const EditOrAddPeriods: Form = buildForm({
   id: 'ParentalLeaveEditOrAddPeriods',
@@ -103,7 +97,7 @@ export const EditOrAddPeriods: Form = buildForm({
                   id: 'useLength',
                   title: parentalLeaveFormMessages.duration.title,
                   description: parentalLeaveFormMessages.duration.description,
-                  defaultValue: NO_ANSWER,
+                  defaultValue: YES,
                   options: [
                     {
                       label: parentalLeaveFormMessages.duration.monthsOption,

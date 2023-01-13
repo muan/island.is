@@ -105,7 +105,7 @@ describe('PoliceController - Get all', () => {
     it('should throw not found exception', () => {
       expect(then.error).toBeInstanceOf(NotFoundException)
       expect(then.error.message).toBe(
-        `No police case files found for case ${originalAncestorCaseId}`,
+        `Police case for case ${originalAncestorCaseId} does not exist`,
       )
     })
   })

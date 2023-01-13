@@ -32,6 +32,7 @@ export const Base = new XroadConf({
       dev: ref((h) => h.svc('http://securityserver.dev01.devland.is')),
       staging: 'http://securityserver.staging01.devland.is',
       prod: 'http://securityserver.island.is',
+      local: ref((h) => h.svc('http://localhost:8081')),
     },
     XROAD_BASE_PATH_WITH_ENV: {
       dev: ref(
@@ -223,6 +224,16 @@ export const Firearm = new XroadConf({
   },
 })
 
+export const DisabilityLicense = new XroadConf({
+  env: {
+    XROAD_DISABILTITY_LICENSE_PATH: {
+      dev: 'IS-DEV/GOV/10008/TR-Protected/oryrki-v1',
+      staging: 'IS-TEST/GOV/5012130120/TR-Protected/oryrki-v1',
+      prod: 'IS/GOV/5012130120/TR-Protected/oryrki-v1',
+    },
+  },
+})
+
 export const Education = new XroadConf({
   env: {
     XROAD_MMS_LICENSE_SERVICE_ID: {
@@ -296,15 +307,11 @@ export const Labor = new XroadConf({
 
 export const PaymentSchedule = new XroadConf({
   env: {
-    PAYMENT_SCHEDULE_XROAD_PROVIDER_ID: {
-      dev: 'IS-DEV/GOV/10021/FJS-Public',
-      staging: 'IS-DEV/GOV/10021/FJS-Public',
-      prod: 'IS/GOV/5402697509/FJS-Public',
+    XROAD_PAYMENT_SCHEDULE_PATH: {
+      dev: 'IS-DEV/GOV/10021/FJS-Public/paymentSchedule_v1',
+      staging: 'IS-DEV/GOV/10021/FJS-Public/paymentSchedule_v1',
+      prod: 'IS/GOV/5402697509/FJS-Public/paymentSchedule_v1',
     },
-  },
-  secrets: {
-    PAYMENT_SCHEDULE_USER: '/k8s/api/PAYMENT_SCHEDULE_USER',
-    PAYMENT_SCHEDULE_PASSWORD: '/k8s/api/PAYMENT_SCHEDULE_PASSWORD',
   },
 })
 
@@ -401,6 +408,59 @@ export const ChargeFjsV2 = new XroadConf({
       dev: 'IS-DEV/GOV/10021/FJS-Public/chargeFJS_v2',
       staging: 'IS-DEV/GOV/10021/FJS-Public/chargeFJS_v2',
       prod: 'IS/GOV/5402697509/FJS-Public/chargeFJS_v2',
+    },
+  },
+})
+
+export const VehicleServiceFjsV1 = new XroadConf({
+  env: {
+    XROAD_VEHICLE_SERVICE_FJS_V1_PATH: {
+      dev: 'IS-DEV/GOV/10021/FJS-Public/VehicleServiceFJS_v1',
+      staging: 'IS-DEV/GOV/10021/FJS-Public/VehicleServiceFJS_v1',
+      prod: 'IS/GOV/5402697509/FJS-Public/VehicleServiceFJS_v1',
+    },
+  },
+})
+
+export const TransportAuthority = new XroadConf({
+  env: {
+    XROAD_VEHICLE_CODETABLES_PATH: {
+      dev: 'IS-DEV/GOV/10017/Samgongustofa-Protected/Vehicle-Codetables-V1',
+      staging: 'IS-DEV/GOV/10017/Samgongustofa-Protected/Vehicle-Codetables-V1',
+      prod: 'IS/GOV/5405131040/Samgongustofa-Protected/Vehicle-Codetables-V1',
+    },
+    XROAD_VEHICLE_INFOLOCKS_PATH: {
+      dev: 'IS-DEV/GOV/10017/Samgongustofa-Protected/Vehicle-Infolocks-V1',
+      staging: 'IS-DEV/GOV/10017/Samgongustofa-Protected/Vehicle-Infolocks-V1',
+      prod: 'IS/GOV/5405131040/Samgongustofa-Protected/Vehicle-Infolocks-V1',
+    },
+    XROAD_VEHICLE_OPERATORS_PATH: {
+      dev: 'IS-DEV/GOV/10017/Samgongustofa-Protected/Vehicle-Operators-V2',
+      staging: 'IS-DEV/GOV/10017/Samgongustofa-Protected/Vehicle-Operators-V2',
+      prod: 'IS/GOV/5405131040/Samgongustofa-Protected/Vehicle-Operators-V2',
+    },
+    XROAD_VEHICLE_OWNER_CHANGE_PATH: {
+      dev: 'IS-DEV/GOV/10017/Samgongustofa-Protected/Vehicle-Ownerchange-V2',
+      staging:
+        'IS-DEV/GOV/10017/Samgongustofa-Protected/Vehicle-Ownerchange-V2',
+      prod: 'IS/GOV/5405131040/Samgongustofa-Protected/Vehicle-Ownerchange-V2',
+    },
+    XROAD_VEHICLE_PLATE_ORDERING_PATH: {
+      dev: 'IS-DEV/GOV/10017/Samgongustofa-Protected/Vehicle-PlateOrdering-V1',
+      staging:
+        'IS-DEV/GOV/10017/Samgongustofa-Protected/Vehicle-PlateOrdering-V1',
+      prod:
+        'IS/GOV/5405131040/Samgongustofa-Protected/Vehicle-PlateOrdering-V1',
+    },
+    XROAD_VEHICLE_PRINTING_PATH: {
+      dev: 'IS-DEV/GOV/10017/Samgongustofa-Protected/Vehicle-Printing-V1',
+      staging: 'IS-DEV/GOV/10017/Samgongustofa-Protected/Vehicle-Printing-V1',
+      prod: 'IS/GOV/5405131040/Samgongustofa-Protected/Vehicle-Printing-V1',
+    },
+    XROAD_DIGITAL_TACHOGRAPH_DRIVERS_CARD_PATH: {
+      dev: 'IS-DEV/GOV/10017/Samgongustofa-Protected/Okuritar-V1',
+      staging: 'IS-DEV/GOV/10017/Samgongustofa-Protected/Okuritar-V1',
+      prod: 'IS/GOV/5405131040/Samgongustofa-Protected/Okuritar-V1',
     },
   },
 })

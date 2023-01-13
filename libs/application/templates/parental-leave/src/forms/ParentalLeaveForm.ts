@@ -40,6 +40,7 @@ import {
   getMultipleBirthRequestDays,
   getMinimumStartDate,
   getLastDayOfLastMonth,
+  allowOtherParentToUsePersonalAllowance,
 } from '../lib/parentalLeaveUtils'
 import {
   GetPensionFunds,
@@ -143,6 +144,14 @@ export const ParentalLeaveForm: Form = buildForm({
                 buildCustomField({
                   component: 'OtherParent',
                   id: 'otherParentObj.chooseOtherParent',
+                  // childInputIds: [
+                  //   'transferRights',
+                  //   'otherParentRightOfAccess',
+                  //   'requestRights.isRequestingRights',
+                  //   'requestRights.requestDays',
+                  //   'giveRights.isGivingRights',
+                  //   'giveRights.giveDays',
+                  // ],
                   title: parentalLeaveFormMessages.shared.otherParentSubTitle,
                 }),
                 buildTextField({
@@ -183,6 +192,7 @@ export const ParentalLeaveForm: Form = buildForm({
                 })?.otherParentObj?.chooseOtherParent === MANUAL,
               title: parentalLeaveFormMessages.rightOfAccess.title,
               description: parentalLeaveFormMessages.rightOfAccess.description,
+              defaultValue: YES,
               options: [
                 {
                   label: parentalLeaveFormMessages.rightOfAccess.yesOption,
@@ -213,6 +223,10 @@ export const ParentalLeaveForm: Form = buildForm({
                   dataTestId: 'bank-account-number',
                   format: '####-##-######',
                   placeholder: '0000-00-000000',
+                  defaultValue: (application: Application) =>
+                    (application.externalData.userProfile?.data as {
+                      bankInfo?: string
+                    })?.bankInfo,
                 }),
                 buildAsyncSelectField({
                   condition: (answers) => {
@@ -365,13 +379,16 @@ export const ParentalLeaveForm: Form = buildForm({
               children: [
                 buildCustomField({
                   component: 'PersonalAllowance',
-                  id: 'usePersonalAllowance',
+                  id: 'personalAllowance.usePersonalAllowance',
                   title: parentalLeaveFormMessages.personalAllowance.useYours,
                 }),
                 buildCustomField({
                   component: 'PersonalUseAsMuchAsPossible',
                   id: 'personalAllowance.useAsMuchAsPossible',
-                  condition: (answers) => answers.usePersonalAllowance === YES,
+                  condition: (answers) =>
+                    (answers as {
+                      personalAllowance: { usePersonalAllowance: string }
+                    })?.personalAllowance?.usePersonalAllowance === YES,
                   title:
                     parentalLeaveFormMessages.personalAllowance
                       .useAsMuchAsPossible,
@@ -383,10 +400,18 @@ export const ParentalLeaveForm: Form = buildForm({
                   description:
                     parentalLeaveFormMessages.personalAllowance.manual,
                   suffix: '%',
-                  condition: (answers) =>
-                    (answers as {
-                      personalAllowance: { useAsMuchAsPossible: string }
-                    })?.personalAllowance?.useAsMuchAsPossible === NO,
+                  condition: (answers) => {
+                    const usingAsMuchAsPossible =
+                      (answers as {
+                        personalAllowance: { useAsMuchAsPossible: string }
+                      })?.personalAllowance?.useAsMuchAsPossible === NO
+                    const usingPersonalAllowance =
+                      (answers as {
+                        personalAllowance: { usePersonalAllowance: string }
+                      })?.personalAllowance?.usePersonalAllowance === YES
+
+                    return usingAsMuchAsPossible && usingPersonalAllowance
+                  },
                   placeholder: '0%',
                   variant: 'number',
                   width: 'half',
@@ -403,13 +428,14 @@ export const ParentalLeaveForm: Form = buildForm({
 
                 return (
                   selectedChild?.parentalRelation ===
-                    ParentalRelations.primary && allowOtherParent(answers)
+                    ParentalRelations.primary &&
+                  allowOtherParentToUsePersonalAllowance(answers)
                 )
               },
               children: [
                 buildCustomField({
                   component: 'PersonalAllowance',
-                  id: 'usePersonalAllowanceFromSpouse',
+                  id: 'personalAllowanceFromSpouse.usePersonalAllowance',
                   title:
                     parentalLeaveFormMessages.personalAllowance.useFromSpouse,
                 }),
@@ -417,8 +443,12 @@ export const ParentalLeaveForm: Form = buildForm({
                   component: 'SpouseUseAsMuchAsPossible',
                   id: 'personalAllowanceFromSpouse.useAsMuchAsPossible',
                   condition: (answers) =>
-                    answers.usePersonalAllowanceFromSpouse === YES &&
-                    allowOtherParent(answers),
+                    (answers as {
+                      personalAllowanceFromSpouse: {
+                        usePersonalAllowance: string
+                      }
+                    })?.personalAllowanceFromSpouse?.usePersonalAllowance ===
+                      YES && allowOtherParent(answers),
                   title:
                     parentalLeaveFormMessages.personalAllowance
                       .useAsMuchAsPossibleFromSpouse,
@@ -430,15 +460,24 @@ export const ParentalLeaveForm: Form = buildForm({
                   description:
                     parentalLeaveFormMessages.personalAllowance.manual,
                   suffix: '%',
-                  condition: (answers) =>
-                    (answers as {
-                      personalAllowanceFromSpouse: {
-                        useAsMuchAsPossible: string
-                      }
-                    })?.personalAllowanceFromSpouse?.useAsMuchAsPossible ===
-                      NO &&
-                    getApplicationAnswers(answers)
-                      .usePersonalAllowanceFromSpouse === YES,
+                  condition: (answers) => {
+                    const usingAsMuchAsPossible =
+                      (answers as {
+                        personalAllowanceFromSpouse: {
+                          useAsMuchAsPossible: string
+                        }
+                      })?.personalAllowanceFromSpouse?.useAsMuchAsPossible ===
+                      NO
+                    const usingPersonalAllowance =
+                      (answers as {
+                        personalAllowanceFromSpouse: {
+                          usePersonalAllowance: string
+                        }
+                      })?.personalAllowanceFromSpouse?.usePersonalAllowance ===
+                      YES
+
+                    return usingAsMuchAsPossible && usingPersonalAllowance
+                  },
                   placeholder: '0%',
                   variant: 'number',
                   width: 'half',
@@ -473,7 +512,9 @@ export const ParentalLeaveForm: Form = buildForm({
                   title:
                     parentalLeaveFormMessages.employer
                       .isRecivingUnemploymentBenefitsTitle,
-                  description: '',
+                  description:
+                    parentalLeaveFormMessages.employer
+                      .isRecivingUnemploymentBenefitsDescription,
                   condition: (answers) =>
                     (answers as {
                       employer: {
@@ -976,7 +1017,7 @@ export const ParentalLeaveForm: Form = buildForm({
                   id: 'useLength',
                   title: getDurationTitle,
                   description: parentalLeaveFormMessages.duration.description,
-                  defaultValue: NO_ANSWER,
+                  defaultValue: YES,
                   options: [
                     {
                       label: parentalLeaveFormMessages.duration.monthsOption,
