@@ -7,14 +7,14 @@ import {
   // XRoadConfig,
 } from '@island.is/nest/config'
 
-import { Configuration, MidlunApi } from '../../gen/fetch'
+import { Configuration, EinstaklingarApi } from '../../gen/fetch'
 import { NationalRegistryV3ClientConfig } from './nationalRegistryV3.config'
 
-export const NationalRegistryV3ApiProvider: Provider<MidlunApi> = {
-  provide: MidlunApi,
+export const NationalRegistryV3ApiProvider: Provider<EinstaklingarApi> = {
+  provide: EinstaklingarApi,
   scope: LazyDuringDevScope,
   useFactory: (config: ConfigType<typeof NationalRegistryV3ClientConfig>) =>
-    new MidlunApi(
+    new EinstaklingarApi(
       new Configuration({
         fetchApi: createEnhancedFetch({
           name: 'clients-national-registry-v3',
@@ -28,6 +28,7 @@ export const NationalRegistryV3ApiProvider: Provider<MidlunApi> = {
             tokenEndpoint: config.endpoint,
           },
         }),
+        // TOOD: ADD Basepath and xroad service path
         // basePath: `${xroadConfig.xRoadBasePath}/r1/${config.xRoadServicePath}`,
         headers: {
           // 'X-Road-Client': xroadConfig.xRoadClient,

@@ -1,11 +1,10 @@
 {
   "openapi": "3.0.1",
   "info": { "title": "MidlunRestAPI", "version": "1.0" },
-  "servers": [{ "url": "https://midlun-dev.skra.is" }],
   "paths": {
-    "/Midlun/client/{nationalId}": {
+    "/Midlun/Einstaklingar/{nationalId}": {
       "get": {
-        "tags": ["Midlun"],
+        "tags": ["Einstaklingar"],
         "parameters": [
           {
             "name": "nationalId",
@@ -37,9 +36,9 @@
         }
       }
     },
-    "/Midlun/client/margir": {
+    "/Midlun/Einstaklingar/margir": {
       "post": {
-        "tags": ["Midlun"],
+        "tags": ["Einstaklingar"],
         "requestBody": {
           "content": {
             "application/json": {
@@ -67,6 +66,137 @@
             }
           }
         }
+      }
+    },
+    "/Midlun/GerviEinstaklingar/{nationalId}": {
+      "get": {
+        "tags": ["GerviEinstaklingar"],
+        "parameters": [
+          {
+            "name": "nationalId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "pakkiB",
+            "in": "query",
+            "schema": { "type": "boolean", "default": true }
+          },
+          {
+            "name": "pakkiC",
+            "in": "query",
+            "schema": { "type": "boolean", "default": true }
+          },
+          {
+            "name": "pakkiD",
+            "in": "query",
+            "schema": { "type": "boolean", "default": true }
+          },
+          {
+            "name": "pakkiE",
+            "in": "query",
+            "schema": { "type": "boolean", "default": true }
+          },
+          {
+            "name": "pakkiF",
+            "in": "query",
+            "schema": { "type": "boolean", "default": true }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EinstaklingurDTOAllt"
+                }
+              }
+            }
+          },
+          "204": { "description": "Success" },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetails" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Midlun/GerviEinstaklingar/margir": {
+      "post": {
+        "tags": ["GerviEinstaklingar"],
+        "parameters": [
+          {
+            "name": "pakkiB",
+            "in": "query",
+            "schema": { "type": "boolean", "default": true }
+          },
+          {
+            "name": "pakkiC",
+            "in": "query",
+            "schema": { "type": "boolean", "default": true }
+          },
+          {
+            "name": "pakkiD",
+            "in": "query",
+            "schema": { "type": "boolean", "default": true }
+          },
+          {
+            "name": "pakkiE",
+            "in": "query",
+            "schema": { "type": "boolean", "default": true }
+          },
+          {
+            "name": "pakkiF",
+            "in": "query",
+            "schema": { "type": "boolean", "default": true }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EinstaklingurDTOAlltList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetails" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Midlun/GerviEinstaklingar/kennitolur": {
+      "get": {
+        "tags": ["GerviEinstaklingar"],
+        "parameters": [
+          {
+            "name": "amount",
+            "in": "query",
+            "schema": { "type": "integer", "format": "int32", "default": 0 }
+          }
+        ],
+        "responses": { "200": { "description": "Success" } }
       }
     }
   },
