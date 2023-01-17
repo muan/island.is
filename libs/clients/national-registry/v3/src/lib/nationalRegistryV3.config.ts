@@ -7,6 +7,7 @@ const schema = z.object({
   clientSecret: z.string(),
   scope: z.string(),
   endpoint: z.string(),
+  xRoadServicePath: z.string(),
 })
 
 export const NationalRegistryV3ClientConfig = defineConfig<
@@ -20,5 +21,9 @@ export const NationalRegistryV3ClientConfig = defineConfig<
     clientSecret: env.required('NATIONAL_REGISTRY_B2C_CLIENT_SECRET', ''),
     scope: env.required('NATIONAL_REGISTRY_B2C_SCOPE', ''),
     endpoint: env.required('NATIONAL_REGISTRY_B2C_ENDPOINT', ''),
+    xRoadServicePath: env.required(
+      'NATIONAL_REGISTRY_B2C_PATH',
+      'IS-DEV/GOV/10001/SKRA-Cloud-Protected/Midlun-v1',
+    ),
   }),
 })
