@@ -1,7 +1,5 @@
-import {
-  VinnuvelaDto,
-  VinnuvelaRettindiDto,
-} from '@island.is/clients/adr-and-machine-license'
+import { MachineLicenseDto } from '@island.is/clients/license-client'
+import { VinnuvelaRettindiDto } from '@island.is/clients/adr-and-machine-license'
 
 import isAfter from 'date-fns/isAfter'
 import { Locale } from '@island.is/shared/types'
@@ -16,29 +14,13 @@ import { getLabel } from '../utils/translations'
 import { Injectable } from '@nestjs/common'
 @Injectable()
 export class MachineLicensePayloadMapper
-  implements GenericLicenseMapper<VinnuvelaDto> {
-  private checkLicenseExpirationDate(license: VinnuvelaDto) {
-    return license.vinnuvelaRettindi
-      ? license.vinnuvelaRettindi
-          .filter((field) => field.kenna || field.stjorna)
-          .every(
-            (field: VinnuvelaRettindiDto) =>
-              field.kenna &&
-              !isAfter(new Date(field.kenna), new Date()) &&
-              field.stjorna &&
-              !isAfter(new Date(field.stjorna), new Date()),
-          )
-      : null
-  }
-
+  implements GenericLicenseMapper<MachineLicenseDto> {
   parsePayload(
-    payload?: VinnuvelaDto,
+    payload?: MachineLicenseDto,
     locale: Locale = 'is',
     labels?: GenericLicenseLabels,
   ): GenericUserLicensePayload | null {
     if (!payload) return null
-
-    const expired: boolean | null = this.checkLicenseExpirationDate(payload)
 
     const label = labels?.labels
     const data: Array<GenericLicenseDataField> = [
@@ -93,7 +75,10 @@ export class MachineLicensePayloadMapper
       rawData: JSON.stringify(payload),
       metadata: {
         licenseNumber: payload.skirteinisNumer?.toString() ?? '',
-        expired: expired,
+        expired: payload.gildirTil
+          ? !isAfter(new Date(payload.gildirTil), new Date())
+          : null,
+        expireDate: payload.gildirTil ?? undefined,
       },
     }
   }

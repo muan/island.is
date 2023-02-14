@@ -2,11 +2,11 @@ import type { Logger } from '@island.is/logging'
 import { LOGGER_PROVIDER } from '@island.is/logging'
 import { Inject, Injectable } from '@nestjs/common'
 import { Auth, AuthMiddleware, User } from '@island.is/auth-nest-tools'
+import { VinnuvelaApi } from '@island.is/clients/adr-and-machine-license'
 import {
-  VinnuvelaApi,
-  VinnuvelaDto,
-} from '@island.is/clients/adr-and-machine-license'
-import { createPkPassDataInput } from './machineLicenseMapper'
+  createPkPassDataInput,
+  findLatestExpirationDate,
+} from './machineLicenseMapper'
 import { FetchError } from '@island.is/clients/middlewares'
 import {
   Pass,
@@ -22,12 +22,13 @@ import {
   PkPassVerificationInputData,
   Result,
 } from '../../licenseClient.type'
+import { MachineLicenseDto } from './machineLicenseClient.type'
 
 /** Category to attach each log message to */
 const LOG_CATEGORY = 'machinelicense-service'
 
 @Injectable()
-export class MachineLicenseClient implements LicenseClient<VinnuvelaDto> {
+export class MachineLicenseClient implements LicenseClient<MachineLicenseDto> {
   constructor(
     @Inject(LOGGER_PROVIDER) private logger: Logger,
     private machineApi: VinnuvelaApi,
@@ -35,7 +36,7 @@ export class MachineLicenseClient implements LicenseClient<VinnuvelaDto> {
   ) {}
 
   private checkLicenseValidityForPkPass(
-    licenseInfo: VinnuvelaDto,
+    licenseInfo: MachineLicenseDto,
   ): LicensePkPassAvailability {
     if (!licenseInfo) {
       return LicensePkPassAvailability.Unknown
@@ -44,12 +45,22 @@ export class MachineLicenseClient implements LicenseClient<VinnuvelaDto> {
     //Nothing to check as of yet
     return LicensePkPassAvailability.Available
   }
-  private async fetchLicense(user: User): Promise<Result<VinnuvelaDto | null>> {
+  private async fetchLicense(
+    user: User,
+  ): Promise<Result<MachineLicenseDto | null>> {
     try {
       const licenseInfo = await this.machineApi
         .withMiddleware(new AuthMiddleware(user as Auth))
         .getVinnuvela()
-      return { ok: true, data: licenseInfo }
+      const expirationDate = findLatestExpirationDate(licenseInfo)
+
+      return {
+        ok: true,
+        data: {
+          ...licenseInfo,
+          gildirTil: expirationDate,
+        },
+      }
     } catch (e) {
       //404 - no license for user, still ok!
       let error
@@ -94,14 +105,16 @@ export class MachineLicenseClient implements LicenseClient<VinnuvelaDto> {
   }
 
   licenseIsValidForPkPass(payload: unknown): LicensePkPassAvailability {
-    return this.checkLicenseValidityForPkPass(payload as VinnuvelaDto)
+    return this.checkLicenseValidityForPkPass(payload as MachineLicenseDto)
   }
-  async getLicense(user: User): Promise<Result<VinnuvelaDto | null>> {
+  async getLicense(user: User): Promise<Result<MachineLicenseDto | null>> {
     const licenseData = await this.fetchLicense(user)
     return licenseData
   }
 
-  async getLicenseDetail(user: User): Promise<Result<VinnuvelaDto | null>> {
+  async getLicenseDetail(
+    user: User,
+  ): Promise<Result<MachineLicenseDto | null>> {
     return this.getLicense(user)
   }
 
@@ -123,10 +136,13 @@ export class MachineLicenseClient implements LicenseClient<VinnuvelaDto> {
       user.nationalId,
       locale,
     )
+
+    const expirationDate = findLatestExpirationDate(license.data)
+
     if (!inputValues) return null
     return {
       inputFieldValues: inputValues,
-      //expirationDate???
+      expirationDate: expirationDate ?? null,
     }
   }
 
