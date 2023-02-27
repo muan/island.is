@@ -28,7 +28,7 @@ import { FirearmLicenseDto } from './firearmLicenseClient.type'
 /** Category to attach each log message to */
 const LOG_CATEGORY = 'firearmlicense-service'
 @Injectable()
-export class FirearmLicenseClient implements LicenseClient<FirearmLicenseDto> {
+export class FirearmLicenseClient {
   constructor(
     @Inject(LOGGER_PROVIDER) private logger: Logger,
     private firearmApi: FirearmApi,

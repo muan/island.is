@@ -10,18 +10,15 @@ import type { PassTemplateIds, LicenseTypeType } from './licenseClient.type'
 import type { Logger } from '@island.is/logging'
 import { LOGGER_PROVIDER } from '@island.is/logging'
 import { DRIVING_LICENSE_CLIENT_FACTORY } from './clients/driving-license-client'
+import { BaseLicenseClient } from './clients/base/baseLicenseClient.service'
 
 @Injectable()
 export class LicenseClientService {
   constructor(
-    @Inject(DRIVING_LICENSE_CLIENT_FACTORY)
-    private drivingLicenseFactory: (
-      cacheManager: CacheManager,
-    ) => Promise<LicenseClient<unknown | null>>,
     @Inject(LICENSE_CLIENT_FACTORY)
     private licenseFactory: (
       type: LicenseType,
-    ) => Promise<LicenseClient<unknown | null>>,
+    ) => Promise<BaseLicenseClient<unknown> | null>,
     @Inject(LOGGER_PROVIDER)
     private logger: Logger,
     @Inject(CONFIG_PROVIDER) private config: PassTemplateIds,

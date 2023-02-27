@@ -26,7 +26,7 @@ import { FlattenedAdrDto } from './adrLicenseClient.type'
 const LOG_CATEGORY = 'adrlicense-service'
 
 @Injectable()
-export class AdrLicenseClient implements LicenseClient<FlattenedAdrDto> {
+export class AdrLicenseClient {
   constructor(
     @Inject(LOGGER_PROVIDER) private logger: Logger,
     private adrApi: AdrApi,

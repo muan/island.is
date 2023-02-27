@@ -30,6 +30,7 @@ import {
   DisabilityDigitalLicenseClientConfig,
 } from './clients/disability-license-client'
 import { DrivingClientModule } from './clients/driving-license-client/drivingLicenseClient.module'
+import { BaseLicenseClient } from './clients/base/baseLicenseClient.service'
 
 @Module({
   imports: [
@@ -73,32 +74,32 @@ import { DrivingClientModule } from './clients/driving-license-client/drivingLic
     },
     {
       provide: LICENSE_CLIENT_FACTORY,
-      useFactory: (
-        firearmClient: FirearmLicenseClient,
-        adrClient: AdrLicenseClient,
-        machineClient: MachineLicenseClient,
-        disabilityClient: DisabilityLicenseClient,
-      ) => async (
-        type: LicenseType,
-      ): Promise<LicenseClient<unknown> | null> => {
-        switch (type) {
-          case LicenseType.FirearmLicense:
+      useFactory: () =>
+        //firearmClient: FirearmLicenseClient,
+        //adrClient: AdrLicenseClient,
+        //machineClient: MachineLicenseClient,
+        //disabilityClient: DisabilityLicenseClient,
+        async (
+          type: LicenseType,
+        ): Promise<BaseLicenseClient<unknown> | null> => {
+          switch (type) {
+            /*case LicenseType.FirearmLicense:
             return firearmClient
           case LicenseType.AdrLicense:
             return adrClient
           case LicenseType.MachineLicense:
             return machineClient
           case LicenseType.DisabilityLicense:
-            return disabilityClient
-          default:
-            return null
-        }
-      },
+            return disabilityClient*/
+            default:
+              return null
+          }
+        },
       inject: [
-        FirearmLicenseClient,
-        AdrLicenseClient,
-        MachineLicenseClient,
-        DisabilityLicenseClient,
+        //FirearmLicenseClient,
+        //AdrLicenseClient,
+        //MachineLicenseClient,
+        //DisabilityLicenseClient,
       ],
     },
   ],

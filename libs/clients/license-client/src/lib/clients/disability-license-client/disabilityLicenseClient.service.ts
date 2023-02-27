@@ -17,23 +17,25 @@ import {
 import { FetchError } from '@island.is/clients/middlewares'
 import compareAsc from 'date-fns/compareAsc'
 import {
-  LicenseClient,
   LicensePkPassAvailability,
   PkPassVerification,
   PkPassVerificationInputData,
   Result,
 } from '../../licenseClient.type'
+import { BaseLicenseClient } from '../base/baseLicenseClient.service'
 
 /** Category to attach each log message to */
 const LOG_CATEGORY = 'disability-license-service'
 
 @Injectable()
-export class DisabilityLicenseClient implements LicenseClient<OrorkuSkirteini> {
+export class DisabilityLicenseClient extends BaseLicenseClient<OrorkuSkirteini> {
   constructor(
-    @Inject(LOGGER_PROVIDER) private logger: Logger,
+    @Inject(LOGGER_PROVIDER) protected logger: Logger,
     private disabilityLicenseApi: DefaultApi,
-    private smartApi: SmartSolutionsApi,
-  ) {}
+    protected smartApi: SmartSolutionsApi,
+  ) {
+    super(logger, smartApi)
+  }
 
   private checkLicenseValidityForPkPass(
     licenseInfo: OrorkuSkirteini,
@@ -127,10 +129,6 @@ export class DisabilityLicenseClient implements LicenseClient<OrorkuSkirteini> {
     }
   }
 
-  async getLicenseDetail(user: User): Promise<Result<OrorkuSkirteini | null>> {
-    return this.getLicense(user)
-  }
-
   private async createPkPassPayload(
     data: OrorkuSkirteini,
   ): Promise<PassDataInput | null> {
@@ -142,7 +140,7 @@ export class DisabilityLicenseClient implements LicenseClient<OrorkuSkirteini> {
     }
   }
 
-  async getPkPass(user: User): Promise<Result<Pass>> {
+  protected async getPkPass(user: User): Promise<Result<Pass>> {
     const license = await this.fetchLicense(user)
 
     if (!license.ok || !license.data) {
@@ -175,32 +173,6 @@ export class DisabilityLicenseClient implements LicenseClient<OrorkuSkirteini> {
     return pass
   }
 
-  async getPkPassQRCode(user: User): Promise<Result<string>> {
-    const res = await this.getPkPass(user)
-
-    if (!res.ok) {
-      return res
-    }
-
-    return {
-      ok: true,
-      data: res.data.distributionQRCode,
-    }
-  }
-
-  async getPkPassUrl(user: User): Promise<Result<string>> {
-    const res = await this.getPkPass(user)
-
-    if (!res.ok) {
-      return res
-    }
-
-    return {
-      ok: true,
-      data: res.data.distributionUrl,
-    }
-  }
-
   async verifyPkPass(data: string): Promise<Result<PkPassVerification>> {
     const { code, date } = JSON.parse(data) as PkPassVerificationInputData
     const result = await this.smartApi.verifyPkPass({ code, date })
@@ -225,25 +197,8 @@ export class DisabilityLicenseClient implements LicenseClient<OrorkuSkirteini> {
     }
   }
 
-  async pushUpdatePass(
-    inputData: PassDataInput,
-    nationalId: string,
-  ): Promise<Result<Pass>> {
-    return await this.smartApi.updatePkPass(inputData, nationalId)
-  }
-
   async pullUpdatePass(nationalId: string): Promise<Result<Pass>> {
-    return {
-      ok: false,
-      error: {
-        code: 99,
-        message: 'not implemented yet',
-      },
-    }
-  }
-
-  async revokePass(nationalId: string): Promise<Result<RevokePassData>> {
-    return await this.smartApi.revokePkPass(nationalId)
+    throw new Error('Not yet implemented')
   }
 
   async verifyPass(inputData: string): Promise<Result<VerifyPassData>> {

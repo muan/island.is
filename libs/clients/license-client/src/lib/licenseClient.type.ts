@@ -111,7 +111,7 @@ export interface LicenseClient<ResultType> {
 
   getPkPassQRCode: (user: User, locale?: Locale) => Promise<Result<string>>
 
-  verifyPkPass: (
+  verifyPassWithPassTemplateId: (
     data: string,
     passTemplateId: string,
   ) => Promise<Result<PkPassVerification>>
