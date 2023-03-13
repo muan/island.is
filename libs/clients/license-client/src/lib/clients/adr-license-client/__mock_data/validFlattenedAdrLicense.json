@@ -1,0 +1,28 @@
+{
+  "kennitala": "0123456789",
+  "fulltNafn": "Test maður",
+  "skirteinisNumer": "00001",
+  "faedingardagur": "1930-01-01T00:00:00",
+  "rikisfang": "IS",
+  "gildirTil": "2050-01-01T00:00:00",
+  "adrRettindi": [
+    {
+      "flokkur": "1.",
+      "grunn": false,
+      "tankar": false,
+      "heiti": "Sprengifim efni og hlutir."
+    },
+    {
+      "flokkur": "4.1",
+      "grunn": true,
+      "tankar": true,
+      "heiti": "Eldfim föst efni, sjálfhvarfandi efni og sprengifim efni í föstu formi sem gerð hafa verið hlutlaus."
+    },
+    {
+      "flokkur": "4.2",
+      "grunn": true,
+      "tankar": true,
+      "heiti": "Sjálftendrandi efni."
+    }
+  ]
+}
