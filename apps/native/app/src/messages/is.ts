@@ -260,6 +260,8 @@ export const is = {
   'walletPassport.expirationDate': 'Lokadagur',
   'walletPassport.mrzName': 'Nafn á tölvulesanlegu formi',
   'walletPassport.children': 'Vegabréf barna',
+  'walletPassport.noPassport': 'Ekki til útgefið vegabréf.',
+  'walletPassport.noPassportLink': 'Nánar á island.is/vegabref',
 
   // license scanner
   'licenseScanner.title': 'Skilríkjaskanni',

@@ -7,7 +7,8 @@ import {
   font,
   Input,
   InputRow,
-  LicenceCard
+  LicenceCard,
+  LinkText
 } from '@island.is/island-ui-native'
 import React from 'react'
 import { useIntl } from 'react-intl'
@@ -16,6 +17,7 @@ import {
   SafeAreaView,
   View,
   Image,
+  TouchableOpacity,
 } from 'react-native'
 import { NavigationFunctionComponent } from 'react-native-navigation'
 import styled from 'styled-components/native'
@@ -26,6 +28,7 @@ import { LicenseStatus, LicenseType } from '../../types/license-type'
 import IconStatusVerified from '../../assets/icons/valid.png';
 import IconStatusNonVerified from '../../assets/icons/danger.png';
 import { useFeatureFlag } from '../../contexts/feature-flag-provider'
+import { openBrowser } from '../../lib/rn-island'
 
 const Information = styled.ScrollView`
   flex: 1;
@@ -185,7 +188,8 @@ export const WalletPassportScreen: NavigationFunctionComponent<{
               <Label>{intl.formatMessage({ id: 'walletPassport.children' })}</Label>
               <Accordion>
                 {childrenPassport?.map((child: any) => {
-                  const isInvalid = child?.status?.toLowerCase() === 'invalid';
+                  const isInvalid = child?.status?.toLowerCase() === 'invalid' || child?.passports?.length === 0;
+                  const noPassport = child?.passports?.length === 0;
                   return (
                     <AccordionItem
                       key={child.childNationalId}
@@ -250,6 +254,16 @@ export const WalletPassportScreen: NavigationFunctionComponent<{
                             </View>
                           )
                         })}
+                        {noPassport &&
+                          <View style={{ marginVertical: 16, paddingHorizontal: 16 }}>
+                            <Label>
+                              {intl.formatMessage({ id: 'walletPassport.noPassport' })}
+                            </Label>
+                            <TouchableOpacity onPress={() => openBrowser(`https://island.is/vegabref`, componentId)}>
+                              <LinkText>{intl.formatMessage({ id: 'walletPassport.noPassportLink' })}</LinkText>
+                            </TouchableOpacity>
+                          </View>
+                        }
                       </View>
                     </AccordionItem>
                   )

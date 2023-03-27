@@ -28,6 +28,7 @@ import com.RNFetchBlob.RNFetchBlobPackage;
 import com.reactnativecommunity.progressview.RNCProgressViewPackage;
 import com.reactnativecommunity.androidprogressbar.RNCProgressBarPackage;
 import cl.json.RNSharePackage;
+import com.reactnativecommunity.clipboard.ClipboardPackage;
 
 // unimodules
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
@@ -70,6 +71,7 @@ public class MainApplication extends NavigationApplication {
           packages.add(new ReactNativeDialogsPackage());
           packages.add(new RNAppAuthPackage());
           packages.add(new RNCWebViewPackage());
+          packages.add(new ClipboardPackage());
           packages.add(new UltimateConfigPackage());
           packages.add(new DdSdkReactNativePackage());
           packages.add(new ReactNativeFirebaseAppPackage());
