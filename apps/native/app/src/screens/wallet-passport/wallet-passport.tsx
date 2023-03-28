@@ -26,7 +26,7 @@ import { GET_IDENTITY_DOCUMENT_QUERY } from '../../graphql/queries/get-identity-
 import { useThemedNavigationOptions } from '../../hooks/use-themed-navigation-options'
 import { LicenseStatus, LicenseType } from '../../types/license-type'
 import IconStatusVerified from '../../assets/icons/valid.png';
-import IconStatusNonVerified from '../../assets/icons/danger.png';
+import IconStatusNonVerified from '../../assets/icons/warning.png';
 import { useFeatureFlag } from '../../contexts/feature-flag-provider'
 import { openBrowser } from '../../lib/rn-island'
 
