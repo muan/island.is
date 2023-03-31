@@ -249,13 +249,13 @@ export const is = {
   'walletPass.expirationDate': 'Gildir til',
 
   // wallet passport
-  'walletPassport.screenTitle': 'Vefabréf',
+  'walletPassport.screenTitle': 'Vegabréf',
   'walletPassport.infoTitle': 'Mundu eftir vegabréfinu!',
   'walletPassport.infoDescription': 'Þetta yfirlit gildir ekki sem ferðaskilríki.',
   'walletPassport.warningTitle': 'Rennur út innan 6 mánaða',
   'walletPassport.warningDescription': 'Athugið að vegabréfið þitt mun renna út innan næstu 6 mánaða.',
   'walletPassport.displayName': 'Nafn einstaklings',
-  'walletPassport.number': 'Númer vefabréfs',
+  'walletPassport.number': 'Númer vegabréfs',
   'walletPassport.issuingDate': 'Útgáfudagur',
   'walletPassport.expirationDate': 'Lokadagur',
   'walletPassport.mrzName': 'Nafn á tölvulesanlegu formi',
