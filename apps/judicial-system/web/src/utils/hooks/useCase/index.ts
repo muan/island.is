@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useContext, useMemo } from 'react'
 import { useMutation } from '@apollo/client'
 import { useIntl } from 'react-intl'
 import formatISO from 'date-fns/formatISO'
@@ -9,14 +9,17 @@ import isNil from 'lodash/isNil'
 import type {
   NotificationType,
   SendNotificationResponse,
-  Case,
   CaseTransition,
   RequestSignatureResponse,
-  UpdateCase,
-  CreateCase,
 } from '@island.is/judicial-system/types'
+import {
+  TempCase as Case,
+  TempUpdateCase as UpdateCase,
+  TempCreateCase as CreateCase,
+} from '@island.is/judicial-system-web/src/types'
 import { toast } from '@island.is/island-ui/core'
 import { errors } from '@island.is/judicial-system-web/messages'
+import { UserContext } from '@island.is/judicial-system-web/src/components'
 
 import { CreateCaseMutation } from './createCaseGql'
 import { CreateCourtCaseMutation } from './createCourtCaseGql'
@@ -25,6 +28,7 @@ import { SendNotificationMutation } from './sendNotificationGql'
 import { TransitionCaseMutation } from './transitionCaseGql'
 import { RequestCourtRecordSignatureMutation } from './requestCourtRecordSignatureGql'
 import { ExtendCaseMutation } from './extendCaseGql'
+import { LimitedAccessTransitionCaseMutation } from './limitedAccessTransitionCaseGql'
 
 type ChildKeys = Pick<
   UpdateCase,
@@ -59,6 +63,10 @@ interface UpdateCaseMutationResponse {
 
 interface TransitionCaseMutationResponse {
   transitionCase: Case
+}
+
+interface LimitedAccessTransitionCaseMutationResponse {
+  limitedAccessTransitionCase: Case
 }
 
 interface SendNotificationMutationResponse {
@@ -146,7 +154,9 @@ export const formatDateForServer = (date: Date) => {
 }
 
 const useCase = () => {
+  const { limitedAccess } = useContext(UserContext)
   const { formatMessage } = useIntl()
+
   const [
     createCaseMutation,
     { loading: isCreatingCase },
@@ -165,6 +175,12 @@ const useCase = () => {
     transitionCaseMutation,
     { loading: isTransitioningCase },
   ] = useMutation<TransitionCaseMutationResponse>(TransitionCaseMutation)
+  const [
+    limitedAccessTransitionCaseMutation,
+    { loading: isLimitedAccessTransitioningCase },
+  ] = useMutation<LimitedAccessTransitionCaseMutationResponse>(
+    LimitedAccessTransitionCaseMutation,
+  )
   const [
     sendNotificationMutation,
     { loading: isSendingNotification, error: sendNotificationError },
@@ -271,28 +287,42 @@ const useCase = () => {
 
   const transitionCase = useMemo(
     () => async (
-      workingCase: Case,
+      caseId: string,
       transition: CaseTransition,
       setWorkingCase?: React.Dispatch<React.SetStateAction<Case>>,
     ): Promise<boolean> => {
+      const mutation = limitedAccess
+        ? limitedAccessTransitionCaseMutation
+        : transitionCaseMutation
+
+      const resultType = limitedAccess
+        ? 'limitedAccessTransitionCase'
+        : 'transitionCase'
+
       try {
-        const { data } = await transitionCaseMutation({
+        const { data } = await mutation({
           variables: {
             input: {
-              id: workingCase.id,
+              id: caseId,
               transition,
             },
           },
         })
 
-        if (!data?.transitionCase?.state) {
+        const res = data as TransitionCaseMutationResponse &
+          LimitedAccessTransitionCaseMutationResponse
+
+        const state = res[resultType].state
+        const appealState = res[resultType].appealState
+
+        if (!state && !appealState) {
           return false
         }
 
         if (setWorkingCase) {
           setWorkingCase((theCase) => ({
             ...theCase,
-            state: data.transitionCase.state,
+            ...res[resultType],
           }))
         }
 
@@ -302,7 +332,12 @@ const useCase = () => {
         return false
       }
     },
-    [formatMessage, transitionCaseMutation],
+    [
+      limitedAccess,
+      limitedAccessTransitionCaseMutation,
+      transitionCaseMutation,
+      formatMessage,
+    ],
   )
 
   const sendNotification = useMemo(
@@ -400,6 +435,7 @@ const useCase = () => {
     isUpdatingCase,
     transitionCase,
     isTransitioningCase,
+    isLimitedAccessTransitioningCase,
     sendNotification,
     isSendingNotification,
     sendNotificationError,

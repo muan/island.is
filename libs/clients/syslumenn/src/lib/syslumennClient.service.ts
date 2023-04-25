@@ -1,4 +1,5 @@
 import {
+  AlcoholLicence,
   SyslumennAuction,
   Homestay,
   PaginatedOperatingLicenses,
@@ -17,6 +18,9 @@ import {
   EstateInfo,
   RealEstateAgent,
   Lawyer,
+  Broker,
+  PropertyDetail,
+  TemporaryEventLicence,
 } from './syslumennClient.types'
 import {
   mapSyslumennAuction,
@@ -32,7 +36,10 @@ import {
   mapEstateInfo,
   mapRealEstateAgent,
   mapLawyer,
+  mapBroker,
+  mapAlcoholLicence,
   cleanPropertyNumber,
+  mapTemporaryEventLicence,
 } from './syslumennClient.utils'
 import { Injectable, Inject } from '@nestjs/common'
 import {
@@ -47,7 +54,6 @@ import { SyslumennClientConfig } from './syslumennClient.config'
 import type { ConfigType } from '@island.is/nest/config'
 import { AuthHeaderMiddleware } from '@island.is/auth-nest-tools'
 import { createEnhancedFetch } from '@island.is/clients/middlewares'
-import { PropertyDetail } from '@island.is/api/domains/assets'
 
 const UPLOAD_DATA_SUCCESS = 'Gögn móttekin'
 
@@ -133,6 +139,14 @@ export class SyslumennService {
     return (lawyers ?? []).map(mapLawyer)
   }
 
+  async getBrokers(): Promise<Broker[]> {
+    const { id, api } = await this.createApi()
+    const brokers = await api.verdbrefamidlararGet({
+      audkenni: id,
+    })
+    return (brokers ?? []).map(mapBroker)
+  }
+
   async getOperatingLicenses(
     searchQuery?: string,
     pageNumber?: number,
@@ -195,6 +209,26 @@ export class SyslumennService {
     return mapOperatingLicensesCSV(csv)
   }
 
+  async getAlcoholLicences(): Promise<AlcoholLicence[]> {
+    const { id, api } = await this.createApi()
+
+    const alcoholLicences = await api.afengisleyfiGet({
+      audkenni: id,
+    })
+
+    return (alcoholLicences ?? []).map(mapAlcoholLicence)
+  }
+
+  async getTemporaryEventLicences(): Promise<TemporaryEventLicence[]> {
+    const { id, api } = await this.createApi()
+
+    const temporaryEventLicences = await api.taekifaerisleyfiGet({
+      audkenni: id,
+    })
+
+    return (temporaryEventLicences ?? []).map(mapTemporaryEventLicence)
+  }
+
   async sealDocument(document: string): Promise<SvarSkeyti> {
     const { id, api } = await this.createApi()
     const explination = 'Rafrænt undirritað vottorð'
@@ -224,7 +258,10 @@ export class SyslumennService {
       uploadDataName,
       uploadDataId,
     )
-    const response = await api.syslMottakaGognPost(payload)
+    const response = await api.syslMottakaGognPost(payload).catch((e) => {
+      throw new Error(`Syslumenn-client: uploadData failed ${e.type}`)
+    })
+
     const success = response.skilabod === UPLOAD_DATA_SUCCESS
     if (!success) {
       throw new Error(`POST uploadData was not successful`)

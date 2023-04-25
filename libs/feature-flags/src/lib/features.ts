@@ -3,24 +3,18 @@ export enum Features {
   // Integrate auth-api with user-profile-api.
   userProfileClaims = 'shouldAuthApiReturnUserProfileClaims',
 
-  // Shows delegation picker in Identity Server and the Service Portal.
-  delegationsEnabled = 'identityserverDelegationsEnabled',
-
-  // Toggles the different kinds of delegations.
-  customDelegations = 'isServicePortalAccessControlModuleEnabled',
-  companyDelegations = 'identityserverCompanyDelegations',
-  legalGuardianDelegations = 'identityserverLegalGuardianDelegations',
-  personalRepresentativeDelegations = 'identityserverPersonalRepresentative',
-
   // Application visibility flags
   exampleApplication = 'isExampleApplicationEnabled',
   accidentNotification = 'isAccidentNotificationEnabled',
   announcementOfDeath = 'isAnnouncementOfDeathEnabled',
   noDebtCertificate = 'applicationTemplateNoDebtCertificateEnabled',
+  drivingLearnersPermit = 'isDrivingLearnersPermitEnabled',
   drivingInstructorRegistrations = 'isDrivingInstructorRegistrationsEnabled',
   drivingSchoolConfirmations = 'isDrivingSchoolConfirmationsEnabled',
+  generalPetition = 'isGeneralPetitionEnabled',
   passportApplication = 'isPassportApplicationEnabled',
   financialStatementInao = 'financialStatementInao',
+  inheritanceReport = 'isInheritanceReportApplicationEnabled',
   operatingLicense = 'isApplicationOperatingLicenseEnabled',
   marriageConditions = 'isMarriageConditionsApplicationEnabled',
   estateApplication = 'isEstateApplicationEnabled',
@@ -34,24 +28,35 @@ export enum Features {
   transportAuthorityOrderVehicleLicensePlate = 'isTransportAuthorityOrderVehicleLicensePlateEnabled',
   transportAuthorityOrderVehicleRegistrationCertificate = 'isTransportAuthorityOrderVehicleRegistrationCertificateEnabled',
   transportAuthorityTransferOfVehicleOwnership = 'isTransportAuthorityTransferOfVehicleOwnershipEnabled',
-
-  // Application delegation flags
-  noDebtCertificateCompanyDelegations = 'applicationNoDebtCertificateCompanyDelegations',
+  transportAuthorityLicensePlateRenewal = 'isTransportAuthorityLicensePlateRenewalEnabled',
+  drivingLicenseBookUpdateInstructor = 'isDrivingLicenseBookUpdateInstructorEnabled',
+  alcoholTaxRedemption = 'isAlcoholTaxRedemptionEnabled',
+  consultationPortalApplication = 'isConsultationPortalEnabled',
 
   // Application System Delegations active
   applicationSystemDelegations = 'applicationSystemDelegations',
 
   // Service portal modules
-  servicePortalDocumentProviderModule = 'isServicePortalDocumentProviderModuleEnabled',
-  servicePortalIcelandicNamesRegistryModule = 'isServicePortalIcelandicNamesRegistryModuleEnabled',
   servicePortalPetitionsModule = 'isServicePortalPetitionsModuleEnabled',
   servicePortalDrivingLessonsBookModule = 'isServicePortalDrivingLessonsBookModuleEnabled',
+  servicePortalAirDiscountModule = 'isServicePortalAirDiscountModuleEnabled',
+  servicePortalEducationGraduation = 'isServicePortalEducationGratuationModuleEnabled',
+  sessionHistory = 'sessionHistory',
 
-  applicationTemplatePublicDeptPaymentPlanAllowDelegation = 'applicationTemplatePublicDeptPaymentPlanAllowDelegation',
+  // Application delegation flags
+  transportAuthorityTransferOfVehicleOwnershipDelegations = 'applicationTransportAuthorityTransferOfVehicleOwnershipDelegations',
+  transportAuthorityChangeCoOwnerOfVehicleDelegations = 'applicationTransportAuthorityChangeCoOwnerOfVehicleDelegations',
+  transportAuthorityChangeOperatorOfVehicleDelegations = 'applicationTransportAuthorityChangeOperatorOfVehicleDelegations',
+  transportAuthorityOrderVehicleLicensePlateDelegations = 'applicationTransportAuthorityOrderVehicleLicensePlateDelegations',
+  transportAuthorityOrderVehicleRegistrationCertificateDelegations = 'applicationTransportAuthorityOrderVehicleRegistrationCertificateDelegations',
+  transportAuthorityLicensePlateRenewalDelegations = 'applicationTransportAuthorityLicensePlateRenewalDelegations',
+  mortgageCertificateDelegations = 'applicationMortgageCertificateDelegations',
+
+  //Application system
+  applicationSystemHistory = 'applicationSystemHistory',
 }
 
 export enum ServerSideFeature {
   testing = 'do-not-remove-for-testing-only',
   drivingLicense = 'driving-license-use-v1-endpoint-for-v2-comms',
-  delegationApi = 'delegation-api',
 }

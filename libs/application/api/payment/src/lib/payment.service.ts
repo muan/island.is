@@ -111,6 +111,7 @@ export class PaymentService {
         user.sub ?? user.nationalId,
         callbackUrl,
       ),
+      paymentId: foundPayment.id,
     }
   }
 
@@ -242,9 +243,17 @@ export class PaymentService {
       performingOrganizationID,
     )
 
-    const items = allItems.filter(({ chargeItemCode }) =>
-      targetChargeItemCodes.includes(chargeItemCode),
-    )
+    // get list of items with catalog info, but make sure to allow duplicates
+    const items: CatalogItem[] = []
+    for (let i = 0; i < targetChargeItemCodes.length; i++) {
+      const chargeItemCode = targetChargeItemCodes[i]
+      const item = allItems.find(
+        (item) => item.chargeItemCode === chargeItemCode,
+      )
+      if (item) {
+        items.push(item)
+      }
+    }
 
     if (!items || items.length === 0) {
       throw new Error('Bad chargeItemCodes or empty catalog')

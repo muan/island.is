@@ -5,6 +5,7 @@ import {
   CaseType,
   investigationCases,
   restrictionCases,
+  User,
 } from '@island.is/judicial-system/types'
 import { caseTypes } from '@island.is/judicial-system/formatters'
 
@@ -28,6 +29,8 @@ type GivenWhenThen = (caseId: string, theCase: Case) => Promise<Then>
 
 describe('InternalCaseController - Deliver requst to court', () => {
   const now = randomDate()
+  const userId = uuid()
+  const user = { id: userId } as User
 
   let mockCourtService: CourtService
   let givenWhenThen: GivenWhenThen
@@ -51,7 +54,7 @@ describe('InternalCaseController - Deliver requst to court', () => {
       const then = {} as Then
 
       await internalCaseController
-        .deliverRequestToCourt(caseId, theCase)
+        .deliverRequestToCourt(caseId, theCase, { user })
         .then((result) => (then.result = result))
         .catch((error) => (then.error = error))
 
@@ -87,6 +90,7 @@ describe('InternalCaseController - Deliver requst to court', () => {
 
       it('should create a request at court', async () => {
         expect(mockCourtService.createDocument).toHaveBeenCalledWith(
+          user,
           caseId,
           courtId,
           courtCaseNumber,

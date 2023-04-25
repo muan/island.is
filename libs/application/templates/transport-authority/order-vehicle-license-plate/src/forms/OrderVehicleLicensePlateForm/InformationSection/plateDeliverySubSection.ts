@@ -12,7 +12,7 @@ import {
 } from '@island.is/application/core'
 import { ChargeItemCode } from '@island.is/shared/constants'
 import { information } from '../../../lib/messages'
-import { DeliveryStation } from '../../../types'
+import { DeliveryStation } from '../../../shared'
 
 export const plateDeliverySubSection = buildSubSection({
   id: 'plateDelivery',
@@ -111,7 +111,7 @@ export const plateDeliverySubSection = buildSubSection({
                 value: YES,
                 label:
                   information.labels.plateDelivery.includeRushFeeCheckboxTitle,
-                subLabel: `${information.labels.plateDelivery.includeRushFeeCheckboxSubTitle.defaultMessage} ${rushFeePaymentItem?.priceAmount} kr.`,
+                subLabel: `${rushFeePaymentItem?.priceAmount} kr.`,
               },
             ]
           },

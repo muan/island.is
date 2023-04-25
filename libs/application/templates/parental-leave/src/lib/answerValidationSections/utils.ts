@@ -1,7 +1,6 @@
 import isWithinInterval from 'date-fns/isWithinInterval'
 import parseISO from 'date-fns/parseISO'
 import addMonths from 'date-fns/addMonths'
-import addDays from 'date-fns/addDays'
 import isValid from 'date-fns/isValid'
 import {
   AnswerValidationError,
@@ -13,8 +12,19 @@ import {
   StaticText,
   StaticTextObject,
 } from '@island.is/application/types'
-import { StartDateOptions, YES, NO } from '../../constants'
-import { getExpectedDateOfBirth } from '../parentalLeaveUtils'
+import {
+  StartDateOptions,
+  YES,
+  NO,
+  PERMANENT_FOSTER_CARE,
+  ADOPTION,
+} from '../../constants'
+import {
+  getApplicationAnswers,
+  getApplicationExternalData,
+  getExpectedDateOfBirthOrAdoptionDate,
+  residentGrantIsOpenForApplication,
+} from '../parentalLeaveUtils'
 import {
   minimumPeriodStartBeforeExpectedDateOfBirth,
   minimumRatio,
@@ -23,8 +33,9 @@ import {
   usageMinMonths,
 } from '../../config'
 import { errorMessages } from '../messages'
+import { calculatePeriodLength } from '../directorateOfLabour.utils'
 
-import { Period } from '../../types'
+import { ChildInformation, Period } from '../../types'
 import { MessageDescriptor } from 'react-intl'
 
 const hasBeenAnswered = (answer: unknown) => answer !== undefined
@@ -101,6 +112,7 @@ const validFirstPeriodStartValues = [
   StartDateOptions.ESTIMATED_DATE_OF_BIRTH,
   StartDateOptions.ACTUAL_DATE_OF_BIRTH,
   StartDateOptions.SPECIFIC_DATE,
+  StartDateOptions.ADOPTION_DATE,
 ]
 
 export const validatePeriod = (
@@ -114,13 +126,15 @@ export const validatePeriod = (
     values?: Record<string, unknown>,
   ) => AnswerValidationError,
 ) => {
-  const expectedDateOfBirth = getExpectedDateOfBirth(application)
+  const expectedDateOfBirthOrAdoptionDate = getExpectedDateOfBirthOrAdoptionDate(
+    application,
+  )
 
-  if (!expectedDateOfBirth) {
+  if (!expectedDateOfBirthOrAdoptionDate) {
     return buildError(null, errorMessages.dateOfBirth)
   }
 
-  const dob = parseISO(expectedDateOfBirth)
+  const dob = parseISO(expectedDateOfBirthOrAdoptionDate)
   const today = new Date()
   const minimumStartDate = addMonths(
     dob,
@@ -157,7 +171,8 @@ export const validatePeriod = (
     if (isFirstPeriod && parseISO(startDate) > today) {
       startDateValue =
         firstPeriodStart === StartDateOptions.ACTUAL_DATE_OF_BIRTH ||
-        firstPeriodStart === StartDateOptions.ESTIMATED_DATE_OF_BIRTH
+        firstPeriodStart === StartDateOptions.ESTIMATED_DATE_OF_BIRTH ||
+        firstPeriodStart === StartDateOptions.ADOPTION_DATE
           ? dob
           : parseISO(startDate)
     } else {
@@ -236,7 +251,7 @@ export const validatePeriod = (
       )
     }
 
-    if (endDateValue < addDays(startDateValue, minPeriodDays - 1)) {
+    if (calculatePeriodLength(startDateValue, endDateValue) < 14) {
       return buildError(
         useLength === YES ? 'endDateDuration' : 'endDate',
         errorMessages.periodsEndDateMinimumPeriod,
@@ -270,4 +285,26 @@ export const validatePeriod = (
       return buildError('ratio', errorMessages.periodsRatioAboveMaximum)
     }
   }
+}
+
+// applicant that cannot apply for residence grant: secondary parents, adoption and foster care
+export const showResidenceGrant = (application: Application) => {
+  const { children } = getApplicationExternalData(application.externalData)
+  const { noChildrenFoundTypeOfApplication } = getApplicationAnswers(
+    application.answers,
+  )
+  const childrenData = (children as unknown) as ChildInformation[]
+  if (
+    childrenData?.length &&
+    childrenData[0]?.parentalRelation?.match('primary') &&
+    noChildrenFoundTypeOfApplication !== PERMANENT_FOSTER_CARE &&
+    noChildrenFoundTypeOfApplication !== ADOPTION
+  )
+    return true
+  return false
+}
+
+export const disableResidenceGrantApplication = (dateOfBirth: string) => {
+  if (!residentGrantIsOpenForApplication(dateOfBirth)) return false
+  return true
 }

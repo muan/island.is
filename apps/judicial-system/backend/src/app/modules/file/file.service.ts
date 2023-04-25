@@ -120,14 +120,8 @@ export class FileService {
 
     switch (file.category) {
       case CaseFileCategory.COVER_LETTER:
-        courtDocumentFolder = CourtDocumentFolder.INDICTMENT_DOCUMENTS
-        break
       case CaseFileCategory.INDICTMENT:
-        courtDocumentFolder = CourtDocumentFolder.INDICTMENT_DOCUMENTS
-        break
       case CaseFileCategory.CRIMINAL_RECORD:
-        courtDocumentFolder = CourtDocumentFolder.INDICTMENT_DOCUMENTS
-        break
       case CaseFileCategory.COST_BREAKDOWN:
         courtDocumentFolder = CourtDocumentFolder.INDICTMENT_DOCUMENTS
         break
@@ -140,6 +134,12 @@ export class FileService {
       case CaseFileCategory.CASE_FILE:
         courtDocumentFolder = CourtDocumentFolder.CASE_DOCUMENTS
         break
+      case CaseFileCategory.PROSECUTOR_APPEAL_BRIEF:
+      case CaseFileCategory.PROSECUTOR_APPEAL_BRIEF_CASE_FILE:
+      case CaseFileCategory.DEFENDANT_APPEAL_BRIEF:
+      case CaseFileCategory.DEFENDANT_APPEAL_BRIEF_CASE_FILE:
+        courtDocumentFolder = CourtDocumentFolder.APPEAL_DOCUMENTS
+        break
       default:
         courtDocumentFolder = CourtDocumentFolder.CASE_DOCUMENTS
     }
@@ -150,7 +150,7 @@ export class FileService {
   private async throttleUpload(
     file: CaseFile,
     theCase: Case,
-    user?: User,
+    user: User,
   ): Promise<string> {
     await this.throttle.catch((reason) => {
       this.logger.info('Previous upload failed', { reason })
@@ -161,6 +161,7 @@ export class FileService {
     const courtDocumentFolder = this.getCourtDocumentFolder(file)
 
     return this.courtService.createDocument(
+      user,
       theCase.id,
       theCase.courtId,
       theCase.courtCaseNumber,
@@ -169,7 +170,6 @@ export class FileService {
       file.name,
       file.type,
       content,
-      user,
     )
   }
 
@@ -231,13 +231,6 @@ export class FileService {
     })
   }
 
-  async getAllCaseFiles(caseId: string): Promise<CaseFile[]> {
-    return this.fileModel.findAll({
-      where: { caseId, state: { [Op.not]: CaseFileState.DELETED } },
-      order: [['created', 'DESC']],
-    })
-  }
-
   async getCaseFileSignedUrl(file: CaseFile): Promise<SignedUrl> {
     if (!file.key) {
       throw new NotFoundException(`File ${file.id} does not exists in AWS S3`)
@@ -272,7 +265,7 @@ export class FileService {
   async uploadCaseFileToCourt(
     file: CaseFile,
     theCase: Case,
-    user?: User,
+    user: User,
   ): Promise<UploadFileToCourtResponse> {
     await this.refreshFormatMessage()
 

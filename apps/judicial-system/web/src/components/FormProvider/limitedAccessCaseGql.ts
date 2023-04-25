@@ -23,6 +23,11 @@ const LimitedAccessCaseQuery = gql`
         gender
         address
         citizenship
+        defenderName
+        defenderNationalId
+        defenderEmail
+        defenderPhoneNumber
+        defendantWaivesRightToCounsel
       }
       defenderName
       defenderNationalId
@@ -90,6 +95,21 @@ const LimitedAccessCaseQuery = gql`
         id
       }
       caseModifiedExplanation
+      caseResentExplanation
+      appealState
+      accusedAppealDecision
+      prosecutorAppealDecision
+      isAppealDeadlineExpired
+      isStatementDeadlineExpired
+      statementDeadline
+      canBeAppealed
+      hasBeenAppealed
+      appealedByRole
+      appealedDate
+      appealDeadline
+      prosecutorStatementDate
+      defenderStatementDate
+      appealReceivedByCourtDate
     }
   }
 `

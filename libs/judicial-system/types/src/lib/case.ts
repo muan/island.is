@@ -1,8 +1,8 @@
 import type { Defendant } from './defendant'
 import type { Institution } from './institution'
 import type { Notification } from './notification'
-import type { CaseFile } from './file'
-import type { User } from './user'
+import { CaseFile, CaseFileCategory } from './file'
+import { User, UserRole } from './user'
 import type { CourtDocument } from './courtDocument'
 
 export enum CaseOrigin {
@@ -73,6 +73,7 @@ export enum IndictmentSubtype {
   UTILITY_THEFT = 'UTILITY_THEFT',
   WEPONS_VIOLATION = 'WEPONS_VIOLATION',
 }
+
 export interface IndictmentSubtypeMap {
   [key: string]: IndictmentSubtype[]
 }
@@ -97,6 +98,12 @@ export enum CaseState {
   DISMISSED = 'DISMISSED',
 }
 
+export enum CaseAppealState {
+  APPEALED = 'APPEALED',
+  RECEIVED = 'RECEIVED',
+  COMPLETED = 'COMPLETED',
+}
+
 export enum CaseTransition {
   OPEN = 'OPEN',
   SUBMIT = 'SUBMIT',
@@ -105,6 +112,10 @@ export enum CaseTransition {
   REJECT = 'REJECT',
   DELETE = 'DELETE',
   DISMISS = 'DISMISS',
+  REOPEN = 'REOPEN',
+  APPEAL = 'APPEAL',
+  RECEIVE_APPEAL = 'RECEIVE_APPEAL',
+  COMPLETE_APPEAL = 'COMPLETE_APPEAL',
 }
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -241,6 +252,48 @@ export interface Case {
   subpoenaType?: SubpoenaType
   defendantWaivesRightToCounsel?: boolean
   crimeScenes?: CrimeSceneMap
+  indictmentIntroduction?: string
+  requestDriversLicenseSuspension?: boolean
+  appealState?: CaseAppealState
+  isStatementDeadlineExpired?: boolean
+  canBeAppealed?: boolean
+  hasBeenAppealed?: boolean
+  appealDeadline?: string
+  appealedByRole?: UserRole
+  appealedDate?: string
+  statementDeadline?: string
+  prosecutorStatementDate?: string
+  defenderStatementDate?: string
+  appealReceivedByCourtDate?: string
+}
+
+export interface CaseListEntry
+  extends Pick<
+    Case,
+    | 'id'
+    | 'created'
+    | 'policeCaseNumbers'
+    | 'state'
+    | 'type'
+    | 'defendants'
+    | 'courtCaseNumber'
+    | 'decision'
+    | 'validToDate'
+    | 'isValidToDateInThePast'
+    | 'courtDate'
+    | 'initialRulingDate'
+    | 'rulingDate'
+    | 'courtEndTime'
+    | 'prosecutorAppealDecision'
+    | 'accusedAppealDecision'
+    | 'prosecutorPostponedAppealDate'
+    | 'accusedPostponedAppealDate'
+    | 'judge'
+    | 'prosecutor'
+    | 'registrar'
+    | 'creatingProsecutor'
+  > {
+  parentCaseId?: string
 }
 
 export type CreateCase = Pick<
@@ -321,6 +374,9 @@ export interface UpdateCase
     | 'subpoenaType'
     | 'defendantWaivesRightToCounsel'
     | 'crimeScenes'
+    | 'indictmentIntroduction'
+    | 'requestDriversLicenseSuspension'
+    | 'appealState'
   > {
   type?: CaseType
   policeCaseNumbers?: string[]
@@ -373,16 +429,19 @@ export const investigationCases = [
   CaseType.VIDEO_RECORDING_EQUIPMENT,
 ]
 
-export function isIndictmentCase(type?: CaseType): boolean {
-  return Boolean(type && indictmentCases.includes(type))
+export function isIndictmentCase(type: string): boolean {
+  const caseType = type as CaseType
+  return indictmentCases.includes(caseType)
 }
 
-export function isRestrictionCase(type?: CaseType): boolean {
-  return Boolean(type && restrictionCases.includes(type))
+export function isRestrictionCase(type: string): boolean {
+  const caseType = type as CaseType
+  return restrictionCases.includes(caseType)
 }
 
-export function isInvestigationCase(type?: CaseType): boolean {
-  return Boolean(type && investigationCases.includes(type))
+export function isInvestigationCase(type: string): boolean {
+  const caseType = type as CaseType
+  return investigationCases.includes(caseType)
 }
 
 export function isAcceptingCaseDecision(decision?: CaseDecision): boolean {
@@ -408,4 +467,72 @@ export function hasCaseBeenAppealed(theCase: Case): boolean {
       Boolean(theCase.accusedPostponedAppealDate) ||
       Boolean(theCase.prosecutorPostponedAppealDate))
   )
+}
+
+export function getAppealInfo(theCase: Case): Case {
+  const {
+    courtEndTime,
+    appealState,
+    accusedAppealDecision,
+    prosecutorAppealDecision,
+    prosecutorPostponedAppealDate,
+    accusedPostponedAppealDate,
+    caseFiles,
+    appealReceivedByCourtDate,
+  } = theCase
+
+  const appealInfo = {} as Case
+
+  if (!courtEndTime) return appealInfo
+
+  appealInfo.canBeAppealed = Boolean(
+    courtEndTime &&
+      !appealState &&
+      (accusedAppealDecision === CaseAppealDecision.POSTPONE ||
+        prosecutorAppealDecision === CaseAppealDecision.POSTPONE),
+  )
+
+  appealInfo.hasBeenAppealed = Boolean(appealState)
+
+  appealInfo.appealedByRole = prosecutorPostponedAppealDate
+    ? UserRole.PROSECUTOR
+    : accusedPostponedAppealDate
+    ? UserRole.DEFENDER
+    : undefined
+
+  appealInfo.appealedDate =
+    appealInfo.appealedByRole === UserRole.PROSECUTOR
+      ? prosecutorPostponedAppealDate ?? undefined
+      : accusedPostponedAppealDate ?? undefined
+
+  if (courtEndTime) {
+    const courtEndDate = new Date(courtEndTime)
+    appealInfo.appealDeadline = new Date(
+      courtEndDate.setDate(courtEndDate.getDate() + 3),
+    ).toISOString()
+  }
+
+  if (appealReceivedByCourtDate) {
+    appealInfo.statementDeadline = getStatementDeadline(
+      new Date(appealReceivedByCourtDate),
+    )
+  }
+  //TODO: These dates should likely be set differently but we haven't
+  //implemented the ability to record when the statement was sent
+  //also this doesn't work for defenders yet because they don't have
+  //file access
+  appealInfo.defenderStatementDate = caseFiles?.find(
+    (cf) => cf.category === CaseFileCategory.DEFENDANT_APPEAL_STATEMENT,
+  )?.created
+  appealInfo.prosecutorStatementDate = caseFiles?.find(
+    (cf) => cf.category === CaseFileCategory.PROSECUTOR_APPEAL_STATEMENT,
+  )?.created
+
+  return appealInfo
+}
+
+export function getStatementDeadline(appealReceived: Date) {
+  return new Date(
+    appealReceived.setDate(appealReceived.getDate() + 1),
+  ).toISOString()
 }

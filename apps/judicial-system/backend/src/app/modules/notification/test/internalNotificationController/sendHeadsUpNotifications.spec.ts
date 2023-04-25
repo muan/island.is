@@ -1,7 +1,11 @@
 import { uuid } from 'uuidv4'
 
-import { CaseType, NotificationType } from '@island.is/judicial-system/types'
 import { SmsService } from '@island.is/nova-sms'
+import {
+  CaseType,
+  NotificationType,
+  User,
+} from '@island.is/judicial-system/types'
 
 import { Case } from '../../../case'
 import { DeliverResponse } from '../../models/deliver.response'
@@ -14,7 +18,8 @@ interface Then {
 
 type GivenWhenThen = (caseId: string, theCase: Case) => Promise<Then>
 
-describe('InternalNotificationController - Send heads up notification', () => {
+describe('InternalNotificationController - Send heads up notifications', () => {
+  const userId = uuid()
   const courtId = uuid()
   const mobileNumber = uuid()
 
@@ -36,6 +41,7 @@ describe('InternalNotificationController - Send heads up notification', () => {
 
       await internalNotificationController
         .sendCaseNotification(caseId, theCase, {
+          user: { id: userId } as User,
           type: NotificationType.HEADS_UP,
         })
         .then((result) => (then.result = result))

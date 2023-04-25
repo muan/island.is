@@ -22,8 +22,9 @@ import {
   CaseState,
   CaseType,
   IndictmentSubtype,
-  User,
+  isIndictmentCase,
 } from '@island.is/judicial-system/types'
+import type { User } from '@island.is/judicial-system/types'
 
 import { EventService } from '../event'
 import { AwsS3Service } from '../aws-s3'
@@ -87,6 +88,7 @@ export class PoliceService {
 
   private async throttleUploadPoliceCaseFile(
     caseId: string,
+    caseType: CaseType,
     uploadPoliceCaseFile: UploadPoliceCaseFileDto,
     user: User,
   ): Promise<UploadPoliceCaseFileResponse> {
@@ -144,7 +146,9 @@ export class PoliceService {
         })
       })
 
-    const key = `uploads/${caseId}/${uuid()}/${uploadPoliceCaseFile.name}`
+    const key = `${
+      isIndictmentCase(caseType) ? 'indictments' : 'uploads'
+    }/${caseId}/${uuid()}/${uploadPoliceCaseFile.name}`
 
     await this.awsS3Service.putObject(key, pdf)
 
@@ -163,11 +167,16 @@ export class PoliceService {
           const response = await res.json()
 
           return response.map(
-            (file: { rvMalSkjolMals_ID: string; heitiSkjals: string }) => ({
+            (file: {
+              rvMalSkjolMals_ID: string
+              heitiSkjals: string
+              malsnumer: string
+            }) => ({
               id: file.rvMalSkjolMals_ID,
               name: file.heitiSkjals.endsWith('.pdf')
                 ? file.heitiSkjals
                 : `${file.heitiSkjals}.pdf`,
+              policeCaseNumber: file.malsnumer,
             }),
           )
         }
@@ -215,11 +224,13 @@ export class PoliceService {
 
   async uploadPoliceCaseFile(
     caseId: string,
+    caseType: CaseType,
     uploadPoliceCaseFile: UploadPoliceCaseFileDto,
     user: User,
   ): Promise<UploadPoliceCaseFileResponse> {
     this.throttle = this.throttleUploadPoliceCaseFile(
       caseId,
+      caseType,
       uploadPoliceCaseFile,
       user,
     )
@@ -228,6 +239,7 @@ export class PoliceService {
   }
 
   async updatePoliceCase(
+    user: User,
     caseId: string,
     caseType: CaseType | IndictmentSubtype,
     caseState: CaseState,
@@ -250,7 +262,7 @@ export class PoliceService {
         caseNumber: policeCaseNumber,
         ssn:
           defendantNationalIds && defendantNationalIds[0]
-            ? defendantNationalIds[0]
+            ? defendantNationalIds[0].replace('-', '')
             : '',
         type: caseType,
         courtVerdict: caseState,
@@ -282,6 +294,8 @@ export class PoliceService {
           'Failed to update police case',
           {
             caseId,
+            actor: user.name,
+            institution: user.institution?.name,
             caseType,
             caseState,
             policeCaseNumber,

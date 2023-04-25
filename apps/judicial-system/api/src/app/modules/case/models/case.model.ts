@@ -1,28 +1,38 @@
 import { GraphQLJSONObject } from 'graphql-type-json'
+import { Field, ObjectType, ID, registerEnumType } from '@nestjs/graphql'
 
-import { Field, ObjectType, ID } from '@nestjs/graphql'
-
-import type {
-  Case as TCase,
+import {
   CaseAppealDecision,
   CaseLegalProvisions,
   CaseCustodyRestrictions,
   CaseDecision,
   CaseState,
-  CaseType,
   SessionArrangements,
   CourtDocument,
   CaseOrigin,
   SubpoenaType,
+  CaseType,
+  CaseAppealState,
+  UserRole,
+} from '@island.is/judicial-system/types'
+import type {
+  Case as TCase,
   IndictmentSubtypeMap,
   CrimeSceneMap,
 } from '@island.is/judicial-system/types'
 
 import { Defendant } from '../../defendant'
+import { IndictmentCount } from '../../indictment-count'
 import { Institution } from '../../institution'
 import { User } from '../../user'
 import { CaseFile } from '../../file'
 import { Notification } from './notification.model'
+
+registerEnumType(CaseType, { name: 'CaseType' })
+registerEnumType(SessionArrangements, { name: 'SessionArrangements' })
+registerEnumType(CaseAppealState, { name: 'CaseAppealState' })
+registerEnumType(CaseOrigin, { name: 'CaseOrigin' })
+registerEnumType(UserRole, { name: 'UserRole' })
 
 @ObjectType()
 export class Case implements TCase {
@@ -35,10 +45,10 @@ export class Case implements TCase {
   @Field()
   readonly modified!: string
 
-  @Field(() => String)
+  @Field(() => CaseOrigin)
   readonly origin!: CaseOrigin
 
-  @Field(() => String)
+  @Field(() => CaseType)
   readonly type!: CaseType
 
   @Field(() => GraphQLJSONObject, { nullable: true })
@@ -140,7 +150,7 @@ export class Case implements TCase {
   @Field({ nullable: true })
   readonly courtCaseNumber?: string
 
-  @Field(() => String, { nullable: true })
+  @Field(() => SessionArrangements, { nullable: true })
   readonly sessionArrangements?: SessionArrangements
 
   @Field({ nullable: true })
@@ -280,4 +290,46 @@ export class Case implements TCase {
 
   @Field(() => GraphQLJSONObject, { nullable: true })
   readonly crimeScenes?: CrimeSceneMap
+
+  @Field({ nullable: true })
+  readonly indictmentIntroduction?: string
+
+  @Field(() => [IndictmentCount], { nullable: true })
+  readonly indictmentCounts?: IndictmentCount[]
+
+  @Field(() => Boolean, { nullable: true })
+  readonly requestDriversLicenseSuspension?: boolean
+
+  @Field(() => CaseAppealState, { nullable: true })
+  readonly appealState?: CaseAppealState
+
+  @Field(() => Boolean, { nullable: true })
+  readonly isStatementDeadlineExpired?: boolean
+
+  @Field({ nullable: true })
+  readonly statementDeadline?: string
+
+  @Field(() => Boolean, { nullable: true })
+  readonly canBeAppealed?: boolean
+
+  @Field(() => Boolean, { nullable: true })
+  readonly hasBeenAppealed?: boolean
+
+  @Field({ nullable: true })
+  readonly appealDeadline?: string
+
+  @Field(() => UserRole, { nullable: true })
+  readonly appealedByRole?: UserRole
+
+  @Field({ nullable: true })
+  readonly appealedDate?: string
+
+  @Field({ nullable: true })
+  readonly prosecutorStatementDate?: string
+
+  @Field({ nullable: true })
+  readonly defenderStatementDate?: string
+
+  @Field({ nullable: true })
+  readonly appealReceivedByCourtDate?: string
 }

@@ -1,44 +1,30 @@
 import { FieldBaseProps } from '@island.is/application/types'
-import { Box, SkeletonLoader, Text } from '@island.is/island-ui/core'
-import { FC, useState } from 'react'
+import {
+  AlertMessage,
+  Box,
+  SkeletonLoader,
+  Text,
+} from '@island.is/island-ui/core'
+import { FC, useEffect } from 'react'
 import { useLocale } from '@island.is/localization'
-import { RadioController } from '@island.is/shared/form-fields'
+import { CheckboxController } from '@island.is/shared/form-fields'
 import { gql, useQuery } from '@apollo/client'
 import { GET_VEHICLE_INFORMATION } from '../graphql/queries'
-import { getValueViaPath, getErrorViaPath } from '@island.is/application/core'
-import { PlateType, VehiclesCurrentVehicle } from '../types'
+import { getErrorViaPath } from '@island.is/application/core'
+import { PlateType, VehiclesCurrentVehicle } from '../shared'
 import { information } from '../lib/messages'
+import { getSelectedVehicle } from '../utils'
 
 export const PickPlateSize: FC<FieldBaseProps> = (props) => {
   const { formatMessage } = useLocale()
-  const { application, errors } = props
+  const { application, errors, setFieldLoadingState } = props
 
-  const [frontPlateSize, setFrontPlateSize] = useState<string>(
-    getValueViaPath(
-      application.answers,
-      'plateSize.frontPlateSize',
-      '',
-    ) as string,
-  )
-
-  const [rearPlateSize, setRearPlateSize] = useState<string>(
-    getValueViaPath(
-      application.answers,
-      'plateSize.rearPlateSize',
-      '',
-    ) as string,
-  )
-
-  const currentVehicleList = application.externalData?.currentVehicleList
-    ?.data as VehiclesCurrentVehicle[]
-  const vehicleValue = getValueViaPath(
+  const vehicle = getSelectedVehicle(
+    application.externalData,
     application.answers,
-    'pickVehicle.vehicle',
-    '',
-  ) as string
-  const vehicle = currentVehicleList[parseInt(vehicleValue, 10)]
+  ) as VehiclesCurrentVehicle
 
-  const { data, loading } = useQuery(
+  const { data, loading, error } = useQuery(
     gql`
       ${GET_VEHICLE_INFORMATION}
     `,
@@ -61,21 +47,33 @@ export const PickPlateSize: FC<FieldBaseProps> = (props) => {
   const currentPlateTypeRear =
     data?.vehiclesDetail?.registrationInfo?.plateTypeRear
 
+  // Plate type front should always be defined (rear type can be empty in some cases)
+  const plateTypeFrontError = !currentPlateTypeFront
+
+  useEffect(() => {
+    setFieldLoadingState?.(loading || !!error)
+  }, [loading, error])
+
   return (
     <Box paddingTop={2}>
-      {!loading ? (
+      {loading ? (
+        <SkeletonLoader
+          height={100}
+          space={2}
+          repeat={2}
+          borderRadius="large"
+        />
+      ) : !error && !plateTypeFrontError ? (
         <>
           <Text variant="h5" marginTop={2} marginBottom={1}>
             {formatMessage(information.labels.plateSize.frontPlateSubtitle)}
           </Text>
-          <RadioController
+          <CheckboxController
             id={`${props.field.id}.frontPlateSize`}
-            largeButtons
-            backgroundColor="blue"
-            onSelect={setFrontPlateSize}
             error={
               errors && getErrorViaPath(errors, 'plateSize.frontPlateSize')
             }
+            defaultValue={[]}
             options={plateTypeList
               ?.filter((x) => x.code === currentPlateTypeFront)
               ?.map((x) => ({
@@ -91,38 +89,46 @@ export const PickPlateSize: FC<FieldBaseProps> = (props) => {
                   ) || '',
               }))}
           />
-          <Text variant="h5" marginTop={2} marginBottom={1}>
-            {formatMessage(information.labels.plateSize.rearPlateSubtitle)}
-          </Text>
-          <RadioController
-            id={`${props.field.id}.rearPlateSize`}
-            largeButtons
-            backgroundColor="blue"
-            onSelect={setRearPlateSize}
-            error={errors && getErrorViaPath(errors, 'plateSize.rearPlateSize')}
-            options={plateTypeList
-              ?.filter((x) => x.code === currentPlateTypeRear)
-              ?.map((x) => ({
-                value: x.code || '',
-                label:
-                  formatMessage(
-                    information.labels.plateSize.plateSizeOptionTitle,
-                    {
-                      name: x.name,
-                      height: x.plateHeight,
-                      width: x.plateWidth,
-                    },
-                  ) || '',
-              }))}
-          />
+          {currentPlateTypeRear && (
+            <>
+              <Text variant="h5" marginTop={2} marginBottom={1}>
+                {formatMessage(information.labels.plateSize.rearPlateSubtitle)}
+              </Text>
+              <CheckboxController
+                id={`${props.field.id}.rearPlateSize`}
+                error={
+                  errors && getErrorViaPath(errors, 'plateSize.rearPlateSize')
+                }
+                defaultValue={[]}
+                options={plateTypeList
+                  ?.filter((x) => x.code === currentPlateTypeRear)
+                  ?.map((x) => ({
+                    value: x.code || '',
+                    label:
+                      formatMessage(
+                        information.labels.plateSize.plateSizeOptionTitle,
+                        {
+                          name: x.name,
+                          height: x.plateHeight,
+                          width: x.plateWidth,
+                        },
+                      ) || '',
+                  }))}
+              />
+            </>
+          )}
         </>
       ) : (
-        <SkeletonLoader
-          height={100}
-          space={2}
-          repeat={2}
-          borderRadius="large"
-        />
+        <Box marginTop={3}>
+          <AlertMessage
+            type="error"
+            title={formatMessage(
+              error
+                ? information.labels.plateSize.error
+                : information.labels.plateSize.errorPlateTypeFront,
+            )}
+          />
+        </Box>
       )}
     </Box>
   )
