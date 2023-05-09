@@ -4,11 +4,15 @@ import { Inject, Injectable } from '@nestjs/common'
 import {
   AidsAndNutritionDTO,
   AidsandnutritionApi,
+  DentistApi,
+  HealthcenterApi,
   TherapyApi,
   TherapyDTO,
 } from '@island.is/clients/icelandic-health-insurance/rights-portal'
 import { ApolloError } from 'apollo-server-express'
 import { Auth, AuthMiddleware, User } from '@island.is/auth-nest-tools'
+import { HealthCenterHistory } from './models/getHealthCenter.model'
+import { Dentist } from './models/getDentist.model'
 
 /** Category to attach each log message to */
 const LOG_CATEGORY = 'rights-portal-service'
@@ -19,6 +23,8 @@ export class RightsPortalService {
     @Inject(LOGGER_PROVIDER) private readonly logger: Logger,
     private therapyApi: TherapyApi,
     private aidsAndNutritionApi: AidsandnutritionApi,
+    private dentistApi: DentistApi,
+    private healthCenterApi: HealthcenterApi,
   ) {}
 
   handleError(error: any, detail?: string): ApolloError | null {
@@ -61,6 +67,46 @@ export class RightsPortalService {
       return res
     } catch (e) {
       return this.handle4xx(e, 'Failed to get aids and nutrition list')
+    }
+  }
+
+  async getDentist(user: User): Promise<Dentist | null | ApolloError> {
+    const api = this.dentistApi.withMiddleware(new AuthMiddleware(user as Auth))
+    try {
+      const res = await Promise.all([
+        api.dentistsCurrent(),
+        api.dentistsBills(),
+      ])
+
+      if (!res) return null
+      return {
+        currentDentistName: res[0].name,
+        billHistory: res[1],
+      }
+    } catch (e) {
+      return this.handle4xx(e, 'Failed to get dentist data')
+    }
+  }
+
+  async getHealthCenterHistory(
+    user: User,
+  ): Promise<HealthCenterHistory | null | ApolloError> {
+    const api = this.healthCenterApi.withMiddleware(
+      new AuthMiddleware(user as Auth),
+    )
+    try {
+      const res = await Promise.all([
+        api.healthcentersCurrent(),
+        api.healthcentersHistory(),
+      ])
+
+      if (!res) return null
+      return {
+        current: res[0],
+        history: res[1],
+      }
+    } catch (e) {
+      return this.handle4xx(e, 'Failed to get health center history')
     }
   }
 }

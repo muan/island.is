@@ -12,7 +12,9 @@
   "paths": {
     "/v1/aidsandnutrition": {
       "get": {
-        "tags": ["aidsandnutrition"],
+        "tags": [
+          "aidsandnutrition"
+        ],
         "operationId": "aidsandnutrition",
         "responses": {
           "200": {
@@ -49,7 +51,9 @@
     },
     "/v1/dentists/current": {
       "get": {
-        "tags": ["dentist"],
+        "tags": [
+          "dentist"
+        ],
         "operationId": "dentists/current",
         "responses": {
           "200": {
@@ -86,7 +90,9 @@
     },
     "/v1/dentists/bills": {
       "get": {
-        "tags": ["dentist"],
+        "tags": [
+          "dentist"
+        ],
         "operationId": "dentists/bills",
         "responses": {
           "200": {
@@ -126,7 +132,9 @@
     },
     "/v1/healthcenters/current": {
       "get": {
-        "tags": ["healthcenter"],
+        "tags": [
+          "healthcenter"
+        ],
         "operationId": "healthcenters/current",
         "responses": {
           "200": {
@@ -163,7 +171,9 @@
     },
     "/v1/healthcenters/history": {
       "get": {
-        "tags": ["healthcenter"],
+        "tags": [
+          "healthcenter"
+        ],
         "operationId": "healthcenters/history",
         "responses": {
           "200": {
@@ -203,7 +213,9 @@
     },
     "/v1/therapies": {
       "get": {
-        "tags": ["therapy"],
+        "tags": [
+          "therapy"
+        ],
         "operationId": "therapies",
         "responses": {
           "200": {

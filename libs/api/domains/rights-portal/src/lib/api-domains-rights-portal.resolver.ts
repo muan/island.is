@@ -12,6 +12,8 @@ import type { User } from '@island.is/auth-nest-tools'
 import { RightsPortalService } from './api-domains-rights-portal.service'
 import { Therapies } from './models/getTherapies.model'
 import { AidsAndNutrition } from './models/getAidsAndNutrition.model'
+import { Dentist } from './models/getDentist.model'
+import { HealthCenterHistory } from './models/getHealthCenter.model'
 
 @UseGuards(IdsUserGuard, ScopesGuard)
 @Resolver()
@@ -31,5 +33,19 @@ export class RightsPortalResolver {
   @Audit()
   getRightsPortalAidsAndNutrition(@CurrentUser() user: User) {
     return this.rightsPortalService.getAidsAndNutrition(user)
+  }
+
+  @Scopes(ApiScope.internal)
+  @Query(() => Dentist, { nullable: true })
+  @Audit()
+  getRightsPortalDentist(@CurrentUser() user: User) {
+    return this.rightsPortalService.getDentist(user)
+  }
+
+  @Scopes(ApiScope.internal)
+  @Query(() => HealthCenterHistory, { nullable: true })
+  @Audit()
+  getRightsPortalHealthCenterHistory(@CurrentUser() user: User) {
+    return this.rightsPortalService.getHealthCenterHistory(user)
   }
 }
