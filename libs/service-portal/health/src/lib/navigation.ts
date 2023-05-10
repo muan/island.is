@@ -14,6 +14,14 @@ export const healthNavigation: PortalNavigationItem = {
       name: m.aidsAndNutrition,
       path: HealthPaths.HealthAidsAndNutrition,
     },
+    {
+      name: m.dentists,
+      path: HealthPaths.HealthDentists,
+    },
+    {
+      name: m.healthCenter,
+      path: HealthPaths.HealthCenter,
+    },
   ],
   icon: {
     icon: 'heart',

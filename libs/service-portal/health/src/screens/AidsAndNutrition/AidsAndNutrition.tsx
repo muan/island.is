@@ -1,4 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
+import { FC } from 'react'
 import { AidOrNutrition, Query } from '@island.is/api/schema'
 import {
   Box,
@@ -20,8 +21,8 @@ import {
 import { messages } from '../../lib/messages'
 import { SUPPORT_PRODUCTS } from '../../utils/constants'
 import { FootNote } from '../../components/FootNote.tsx/FootNote'
-import { FC } from 'react'
 import { useGetAidsAndNutritionQuery } from './AidsAndNutrition.generated'
+import * as styles from './AidsAndNutrition.css'
 
 const AidsAndNutrition = () => {
   useNamespaces('sp.health')
@@ -134,8 +135,8 @@ const AidsAndNutritionTabsContent: FC<Props> = ({ data }) => {
 
   const generateRow = (rowItem: AidOrNutrition) => {
     const row = (
-      <T.Row>
-        <T.Data>
+      <T.Row key={rowItem.id}>
+        <T.Data color="#003c0933">
           <Text variant="medium">{rowItem.name}</Text>
         </T.Data>
         <T.Data>

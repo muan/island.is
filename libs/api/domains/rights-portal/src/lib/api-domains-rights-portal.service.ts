@@ -12,7 +12,7 @@ import {
 import { ApolloError } from 'apollo-server-express'
 import { Auth, AuthMiddleware, User } from '@island.is/auth-nest-tools'
 import { HealthCenterHistory } from './models/getHealthCenter.model'
-import { Dentist } from './models/getDentist.model'
+import { Dentists } from './models/getDentists.model'
 
 /** Category to attach each log message to */
 const LOG_CATEGORY = 'rights-portal-service'
@@ -70,7 +70,7 @@ export class RightsPortalService {
     }
   }
 
-  async getDentist(user: User): Promise<Dentist | null | ApolloError> {
+  async getDentists(user: User): Promise<Dentists | null | ApolloError> {
     const api = this.dentistApi.withMiddleware(new AuthMiddleware(user as Auth))
     try {
       const res = await Promise.all([
@@ -84,7 +84,7 @@ export class RightsPortalService {
         billHistory: res[1],
       }
     } catch (e) {
-      return this.handle4xx(e, 'Failed to get dentist data')
+      return this.handle4xx(e, 'Failed to get dentists data')
     }
   }
 
