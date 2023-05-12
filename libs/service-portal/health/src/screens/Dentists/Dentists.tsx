@@ -19,12 +19,23 @@ import {
 import { IntroHeader } from '@island.is/portals/core'
 import { messages } from '../../lib/messages'
 import { DentistBill } from '@island.is/api/schema'
+import addDays from 'date-fns/addDays'
 
 const Dentists = () => {
   useNamespaces('sp.health')
   const { formatMessage } = useLocale()
 
-  const { loading, error, data } = useGetDentistsQuery()
+  const dateTo = new Date().toISOString()
+  const dateFrom = addDays(new Date(), -12).toISOString()
+
+  const { loading, error, data } = useGetDentistsQuery({
+    variables: {
+      input: {
+        dateFrom,
+        dateTo,
+      },
+    },
+  })
 
   const dentistData = data?.getRightsPortalDentists
 

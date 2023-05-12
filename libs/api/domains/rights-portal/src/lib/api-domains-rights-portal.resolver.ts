@@ -1,4 +1,4 @@
-import { Query, Resolver } from '@nestjs/graphql'
+import { Args, Query, Resolver } from '@nestjs/graphql'
 import { ApiScope } from '@island.is/auth/scopes'
 import { UseGuards } from '@nestjs/common'
 import { Audit } from '@island.is/nest/audit'
@@ -14,6 +14,7 @@ import { Therapies } from './models/getTherapies.model'
 import { AidsAndNutrition } from './models/getAidsAndNutrition.model'
 import { HealthCenterHistory } from './models/getHealthCenter.model'
 import { Dentists } from './models/getDentists.model'
+import { GetDentistsInput } from './dto/getDentists.input'
 
 @UseGuards(IdsUserGuard, ScopesGuard)
 @Resolver()
@@ -38,8 +39,12 @@ export class RightsPortalResolver {
   @Scopes(ApiScope.internal)
   @Query(() => Dentists, { nullable: true })
   @Audit()
-  getRightsPortalDentists(@CurrentUser() user: User) {
-    return this.rightsPortalService.getDentists(user)
+  getRightsPortalDentists(
+    @CurrentUser() user: User,
+    @Args('input', { type: () => GetDentistsInput })
+    input: GetDentistsInput,
+  ) {
+    return this.rightsPortalService.getDentists(user, input)
   }
 
   @Scopes(ApiScope.internal)

@@ -13,6 +13,7 @@ import { ApolloError } from 'apollo-server-express'
 import { Auth, AuthMiddleware, User } from '@island.is/auth-nest-tools'
 import { HealthCenterHistory } from './models/getHealthCenter.model'
 import { Dentists } from './models/getDentists.model'
+import { GetDentistsInput } from './dto/getDentists.input'
 
 /** Category to attach each log message to */
 const LOG_CATEGORY = 'rights-portal-service'
@@ -70,12 +71,15 @@ export class RightsPortalService {
     }
   }
 
-  async getDentists(user: User): Promise<Dentists | null | ApolloError> {
+  async getDentists(
+    user: User,
+    input: GetDentistsInput,
+  ): Promise<Dentists | null | ApolloError> {
     const api = this.dentistApi.withMiddleware(new AuthMiddleware(user as Auth))
     try {
       const res = await Promise.all([
         api.dentistsCurrent(),
-        api.dentistsBills(),
+        api.dentistsBills(input),
       ])
 
       if (!res) return null
