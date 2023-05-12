@@ -1,12 +1,9 @@
-import { gql, useQuery } from '@apollo/client'
-import { FC } from 'react'
-import { AidOrNutrition, Query } from '@island.is/api/schema'
+import { AidOrNutrition } from '@island.is/api/schema'
 import {
   Box,
   Table as T,
   Text,
   Inline,
-  Button,
   SkeletonLoader,
   Tabs,
   TabType,
@@ -16,13 +13,14 @@ import {
   EmptyState,
   ErrorScreen,
   IntroHeader,
+  amountFormat,
   m,
 } from '@island.is/service-portal/core'
 import { messages } from '../../lib/messages'
-import { SUPPORT_PRODUCTS } from '../../utils/constants'
-import { FootNote } from '../../components/FootNote.tsx/FootNote'
+import { FC } from 'react'
 import { useGetAidsAndNutritionQuery } from './AidsAndNutrition.generated'
-import * as styles from './AidsAndNutrition.css'
+
+import LinkButton from '../../components/LinkButton/LinkButton'
 
 const AidsAndNutrition = () => {
   useNamespaces('sp.health')
@@ -77,48 +75,13 @@ const AidsAndNutrition = () => {
 
       {!loading && !error && tabs.length > 0 && (
         <Box>
-          <Inline space={3}>
-            <>
-              <a
-                href="https://island.is/greidsluthatttaka-vegna-naeringar-og-serfaedis"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Button
-                  size="small"
-                  variant="text"
-                  icon="open"
-                  iconType="outline"
-                >
-                  {formatMessage(messages.aidsAndNutritionDescriptionInfo1)}
-                </Button>
-              </a>
-              <a
-                href="https://island.is/einnota-hjalpartaeki"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Button
-                  size="small"
-                  variant="text"
-                  icon="open"
-                  iconType="outline"
-                >
-                  {formatMessage(messages.aidsAndNutritionDescriptionInfo2)}
-                </Button>
-              </a>
-            </>
-          </Inline>
-
-          <Box marginTop={[0, 0, 5]}>
-            <Tabs
-              label={formatMessage(messages.chooseAidsOrNutrition)}
-              tabs={tabs}
-              contentBackground="transparent"
-              selected="0"
-              size="xs"
-            />
-          </Box>
+          <Tabs
+            label={formatMessage(messages.chooseAidsOrNutrition)}
+            tabs={tabs}
+            contentBackground="transparent"
+            selected="0"
+            size="xs"
+          />
         </Box>
       )}
     </Box>
@@ -134,30 +97,36 @@ const AidsAndNutritionTabsContent: FC<Props> = ({ data }) => {
   const { formatMessage } = useLocale()
 
   const generateRow = (rowItem: AidOrNutrition) => {
+    const DataRowWithYellow: FC = ({ children }) => {
+      return (
+        <T.Data
+          box={{
+            background: rowItem.expiring ? 'yellow300' : 'transparent',
+          }}
+        >
+          <Text variant="medium">{children}</Text>
+        </T.Data>
+      )
+    }
+
     const row = (
       <T.Row key={rowItem.id}>
-        <T.Data color="#003c0933">
-          <Text variant="medium">{rowItem.name}</Text>
-        </T.Data>
-        <T.Data>
-          <Text variant="medium">{rowItem.maxUnitRefund}</Text>
-        </T.Data>
-        <T.Data>
-          <Text variant="medium">{`${rowItem.refund.value}${
-            rowItem.refund.type === 'amount' ? ' kr.' : '%'
-          }`}</Text>
-        </T.Data>
-        <T.Data>
-          <Text variant="medium">{rowItem.available}</Text>
-        </T.Data>
-        <T.Data>
-          <Text variant="medium">{rowItem.location}</Text>
-        </T.Data>
+        <DataRowWithYellow>{rowItem.name}</DataRowWithYellow>
+        <DataRowWithYellow>{rowItem.maxUnitRefund}</DataRowWithYellow>
+        <DataRowWithYellow>
+          {rowItem.refund.type === 'amount'
+            ? amountFormat(rowItem.refund.value)
+            : `${rowItem.refund.value}%`}
+        </DataRowWithYellow>
+        <DataRowWithYellow>{rowItem.available}</DataRowWithYellow>
+        <DataRowWithYellow>{rowItem.location}</DataRowWithYellow>
+        <DataRowWithYellow />
       </T.Row>
     )
 
     return row
   }
+
   return (
     <Box marginTop={[2, 2, 5]}>
       <Box marginTop={2}>
@@ -194,8 +163,23 @@ const AidsAndNutritionTabsContent: FC<Props> = ({ data }) => {
           </T.Head>
           <T.Body>{data.map((rowItem) => generateRow(rowItem))}</T.Body>
         </T.Table>
+      </Box>{' '}
+      <Box paddingTop={4}>
+        <Text variant="small" paddingBottom={2}>
+          {formatMessage(messages['aidsAndNutritionDisclaimer'])}
+        </Text>
+        {}
+        <Inline space={3}>
+          <LinkButton
+            to="https://island.is/greidsluthatttaka-vegna-naeringar-og-serfaedis"
+            text={formatMessage(messages.aidsAndNutritionDescriptionInfo1)}
+          />
+          <LinkButton
+            to="https://island.is/einnota-hjalpartaeki"
+            text={formatMessage(messages.aidsAndNutritionDescriptionInfo2)}
+          />
+        </Inline>
       </Box>
-      <FootNote type={SUPPORT_PRODUCTS} />
     </Box>
   )
 }

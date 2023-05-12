@@ -48,7 +48,7 @@ export const messages = defineMessages({
   aidsAndNutritionDisclaimer: {
     id: 'sp.health:aids-and-nutrition-disclaimer',
     defaultMessage:
-      'Styrkur getur ýmist verið greiddur sem ákveðið hlutfall af verði hjálpartækis og næringar og/eða ákveðin fjárhæð til kaupa á hjálpartæki eða næringu. Í neðangreindri töflu birta SÍ þín réttindi til notkunar/úttektar á hjálpartækjum og næringu sem sótt hefur verið um til Hjálpartækjamiðstöðvar. Þegar innan við 60 dagar eru eftir af heimild, þá litast viðkomandi lína gul í töflu. Sjá frekari upplýsingar um hjálpartæki',
+      'Styrkur getur ýmist verið greiddur sem ákveðið hlutfall af verði hjálpartækis og næringar og/eða ákveðin fjárhæð til kaupa á hjálpartæki eða næringu. Í neðangreindri töflu birta SÍ þín réttindi til notkunar/úttektar á hjálpartækjum og næringu sem sótt hefur verið um til Hjálpartækjamiðstöðvar. Þegar innan við 60 dagar eru eftir af heimild, þá litast viðkomandi lína gul í töflu.',
   },
   aids: {
     id: 'sp.health:aids',
@@ -133,9 +133,9 @@ export const messages = defineMessages({
     defaultMessage:
       'Sé beiðni samþykkt fær einstaklingur 20 skipti í talþjálfun á hverju 12 mánaða tímabili. Hann á einnig rétt á nauðsynlegri viðbótarþjálfun hafi Sjúkratryggingar Íslands samþykkt slíka meðferð.',
   },
-  physioDisclaimer4: {
-    id: 'sp.health:therapy-disclaimer-3',
-    defaultMessage: '<link>Frekari upplýsingar um sjúkraþjálfun</link>',
+  physioLink: {
+    id: 'sp.health:therapy-link',
+    defaultMessage: 'Nánar um sjúkraþjálfun',
   },
   noValidTimePeriod: {
     id: 'sp.health:no-valid-time-period',

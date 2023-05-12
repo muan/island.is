@@ -6,7 +6,7 @@
   },
   "servers": [
     {
-      "url": "/minarsidur-jwt"
+      "url": "/minarsidur"
     }
   ],
   "paths": {
@@ -94,6 +94,26 @@
           "dentist"
         ],
         "operationId": "dentists/bills",
+        "parameters": [
+          {
+            "name": "dateFrom",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateTo",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK",

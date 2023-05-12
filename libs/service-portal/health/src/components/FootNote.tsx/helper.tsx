@@ -7,7 +7,6 @@ import {
   PHYSIO_HOME_THERAPY,
   PHYSIO_THERAPY,
   SPEECH_THERAPY,
-  SUPPORT_PRODUCTS,
 } from '../../utils/constants'
 
 //TODO: Get correct paths from Sjúkratryggingar
@@ -24,10 +23,6 @@ export const getFootNoteByType = (
   formatMessage: FormatMessage,
 ) => {
   switch (type) {
-    case SUPPORT_PRODUCTS:
-      return {
-        first: formatMessage(messages['aidsAndNutritionDisclaimer']),
-      }
     case PHYSIO_THERAPY:
       return {
         first: formatMessage(messages['physioDisclaimer1']),
@@ -35,9 +30,6 @@ export const getFootNoteByType = (
           link: (str) => button(str),
         }),
         third: formatMessage(messages['physioDisclaimer3']),
-        fourth: formatMessage(messages['physioDisclaimer4'], {
-          link: (str) => button(str),
-        }),
       }
       break
     case PHYSIO_ACCIDENT_THERAPY:
@@ -48,9 +40,6 @@ export const getFootNoteByType = (
           link: (str) => button(str),
         }),
         third: formatMessage(messages['physioDisclaimer3']),
-        fourth: formatMessage(messages['physioDisclaimer4'], {
-          link: (str) => button(str),
-        }),
       }
       break
     case PHYSIO_HOME_THERAPY:
@@ -62,9 +51,6 @@ export const getFootNoteByType = (
           link: (str) => button(str),
         }),
         third: formatMessage(messages['physioDisclaimer3']),
-        fourth: formatMessage(messages['physioDisclaimer4'], {
-          link: (str) => button(str),
-        }),
       }
       break
     case SPEECH_THERAPY:
@@ -76,9 +62,6 @@ export const getFootNoteByType = (
           link: (str) => button(str),
         }),
         third: formatMessage(messages['physioDisclaimer3']),
-        fourth: formatMessage(messages['physioDisclaimer4'], {
-          link: (str) => button(str),
-        }),
       }
       break
     case OCCUPATIONAL_THERAPY:
@@ -89,9 +72,6 @@ export const getFootNoteByType = (
           link: (str) => button(str),
         }),
         third: formatMessage(messages['physioDisclaimer3']),
-        fourth: formatMessage(messages['physioDisclaimer4'], {
-          link: (str) => button(str),
-        }),
       }
       break
     default:
@@ -101,9 +81,6 @@ export const getFootNoteByType = (
           link: (str) => button(str),
         }),
         third: formatMessage(messages['physioDisclaimer3']),
-        fourth: formatMessage(messages['physioDisclaimer4'], {
-          link: (str) => button(str),
-        }),
       }
       break
   }
