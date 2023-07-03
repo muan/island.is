@@ -320,9 +320,7 @@ type UseParams = {
 
 const LicenseDetail = () => {
   useNamespaces('sp.license')
-  const { formatMessage } = useLocale()
-  const { data: userProfile } = useUserProfile()
-  const locale = userProfile?.locale ?? 'is'
+  const { formatMessage, locale } = useLocale()
   const { type } = useParams() as UseParams
   const licenseType = type ? getTypeFromPath(type) : undefined
 
